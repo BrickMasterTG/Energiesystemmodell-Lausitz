@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000);
+renderer.setClearColor(0x5182ed);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -45,48 +45,40 @@ scene.add(lightHelper);
 const gridHelper = new THREE.GridHelper(200, 200);
 scene.add(gridHelper);
 
-// Körperteile und die zugehörigen .glb-Dateien
-const bodyParts = {
-  Kopf: 'kopf.glb',
-  Körper: 'koerper.glb',
-  BeinLinks: 'bein-links.glb',
-  BeinRechts: 'bein-rechts.glb',
-  ArmRechts: 'arm-rechts.glb'
-};
+// Nur Dateinamen als Liste
+const bodyParts = [
+  'kopf.glb',
+  'koerper.glb',
+  'bein-links.glb',
+  'bein-rechts.glb',
+  'arm-rechts.glb'
+];
 
-// GLTFLoader für jedes Körperteil
 const loader = new GLTFLoader().setPath('models/');
+const meshes = {}; // Key: Dateiname, Value: Mesh
 
-// Körperteile in der Szene laden und erkennbar machen
-const meshes = {}; // Speichert die Meshes der Körperteile für späteres Klick-Handling
-
-Object.entries(bodyParts).forEach(([partName, fileName]) => {
+bodyParts.forEach((fileName) => {
   loader.load(fileName, (gltf) => {
-    console.log(`${partName} geladen`);
     const mesh = gltf.scene;
 
     mesh.traverse((child) => {
       if (child.isMesh) {
-        console.log('Mesh:', child.name);
         child.castShadow = true;
         child.receiveShadow = true;
 
-        // Speichern des Meshes für spätere Klick-Erkennung
-        meshes[partName] = child;
+        // Speichern für Klick-Erkennung
+        meshes[fileName] = child;
+        child.userData = { fileName };
 
-        // Füge `userData` hinzu, um den Körperteil später zu identifizieren
-        child.userData = { partName };
-
-        // Position des Körperteils anpassen
         mesh.position.set(0, 0, 0);
         scene.add(mesh);
       }
     });
-    
+
   }, (xhr) => {
-    console.log(`Loading ${partName}: ${xhr.loaded / xhr.total * 100}%`);
+    console.log(`Loading ${fileName}: ${xhr.loaded / xhr.total * 100}%`);
   }, (error) => {
-    console.error(`Fehler beim Laden von ${partName}:`, error);
+    console.error(`Fehler beim Laden von ${fileName}:`, error);
   });
 });
 
@@ -96,51 +88,26 @@ const mouse = new THREE.Vector2();
 
 // Klick-Listener hinzufügen
 window.addEventListener('click', (event) => {
-  // Normierte Mauskoordinaten
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-  // Raycaster aktualisieren
   raycaster.setFromCamera(mouse, camera);
+  raycaster.far = 80;
 
-  // Setze die maximale Reichweite des Raycasters
-  raycaster.far = 80;  // Hier die Reichweite einstellen
-
-  // Finde alle Meshes, die mit dem Ray interagieren
   const intersects = raycaster.intersectObjects(Object.values(meshes), true);
 
   if (intersects.length > 0) {
     const object = intersects[0].object;
-    const partName = object.userData.partName;
+    const fileName = object.userData.fileName;
 
-    // Zeige an, welches Körperteil geklickt wurde
-    console.log(`${partName} wurde angeklickt!`);
-
-    // Beispielhafte Handhabung nach Klick (hier: Alert)
-    switch (partName) {
-      case 'Kopf':
-        alert('Du hast auf den Kopf geklickt!');
-        break;
-      case 'Körper':
-        alert('Du hast auf den Körper geklickt!');
-        break;
-      case 'BeinLinks':
-        alert('Du hast auf das linke Bein geklickt!');
-        break;
-      case 'BeinRechts':
-        alert('Du hast auf das rechte Bein geklickt!');
-        break;
-      case 'ArmRechts':
-        alert('Du hast auf den rechten Arm geklickt!');
-        break;
-      default:
-        alert(`Kein spezielles Verhalten für ${partName}`);
-    }
+    console.log(`GLB-Datei geklickt: ${fileName}`);
+    alert(`GLB-Datei: ${fileName}`);
   } else {
-    console.log('Kein Körperteil getroffen');
+    console.log('Kein Objekt getroffen');
   }
 });
+
 
 
 // Anpassung bei Fenstergrößenänderung
