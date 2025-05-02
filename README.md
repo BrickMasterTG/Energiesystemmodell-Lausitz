@@ -1,3 +1,3 @@
 # Energiesystemmodell-Lausitz
 
-Alle Dateien fürs Projekt - test
+Alle Dateien fürs Projekt
