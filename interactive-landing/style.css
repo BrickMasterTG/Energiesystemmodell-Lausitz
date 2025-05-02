@@ -18,3 +18,11 @@ h1 {
     height: 100vh;
     position: relative;
 }
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
