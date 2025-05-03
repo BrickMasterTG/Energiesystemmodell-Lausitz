@@ -33,8 +33,8 @@ controls.update();
 const ambientLight = new THREE.AmbientLight(0xffffff);
 scene.add(ambientLight);
 
-const spotLight = new THREE.SpotLight(0xffffff, 3000, 100, 0.22, 1);
-spotLight.position.set(0, 50, 0);
+const spotLight = new THREE.SpotLight(0xffffff, 10000, 0, 0.22, 1);
+spotLight.position.set(0, 80, 0);
 spotLight.castShadow = true;
 spotLight.shadow.bias = -0.0001;
 scene.add(spotLight);
@@ -47,11 +47,13 @@ scene.add(gridHelper);
 
 // Nur Dateinamen als Liste
 const bodyParts = [
-  'kopf.glb',
-  'koerper.glb',
-  'bein-links.glb',
-  'bein-rechts.glb',
-  'arm-rechts.glb'
+  //'kopf.glb',
+  //'koerper.glb',
+  //'bein-links.glb',
+  //'bein-rechts.glb',
+  //'arm-rechts.glb',
+  //'ImageToStl.com_Modelltisch-Basis+v42.glb',
+  'Tisch.glb'
 ];
 
 const loader = new GLTFLoader().setPath('models/');
@@ -62,18 +64,23 @@ bodyParts.forEach((fileName) => {
     const mesh = gltf.scene;
 
     mesh.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-
-        // Speichern für Klick-Erkennung
-        meshes[fileName] = child;
-        child.userData = { fileName };
-
-        mesh.position.set(0, 0, 0);
-        scene.add(mesh);
-      }
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.userData = { fileName };
+    }
     });
+
+// RICHTIG: gesamter Mesh wird gespeichert
+meshes[fileName] = mesh;
+scene.add(mesh);
+
+
+    // SCALE THE MODEL HERE
+    if (fileName === 'Tisch.glb') {
+      mesh.scale.set(8, 8, 8); // Beispiel-Skalierung (x, y, z)
+      mesh.position.set(0, 0, 0); // Optional: Position anpassen
+    }
 
   }, (xhr) => {
     console.log(`Loading ${fileName}: ${xhr.loaded / xhr.total * 100}%`);
