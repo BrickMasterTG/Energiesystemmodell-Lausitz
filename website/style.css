@@ -4,7 +4,7 @@ body {
     font-family: sans-serif;
 }
 
-h1 {
+h1,h4 {
     position: absolute;
     top: 10px;
     left: 20px;
@@ -12,6 +12,9 @@ h1 {
     color: white;
     text-shadow: 1px 1px 5px black;
 }
+h4 {
+    top: 50px;
+    }
 
 #canvas-container {
     width: 100vw;
