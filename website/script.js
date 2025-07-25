@@ -11,7 +11,7 @@ function setSpotlightAngleFromDegrees(spotlight, degrees) {
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x5182ed);
+renderer.setClearColor(0xffffff);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -26,21 +26,23 @@ const camera = new THREE.PerspectiveCamera(
   1,
   1000
 );
-camera.position.set(8, 40, 22);
+//camera.position.set(8, 40, 22);
+camera.position.set(10, 5, 10);
 camera.near = 0.1; // Nahe Clipping-Ebene
 camera.far = 500; // Entfernte Clipping-Ebene
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.enablePan = false;
-controls.minDistance = 15;
-controls.maxDistance = 35;
+controls.enablePan = true;
+//controls.enablePan = false;
+//controls.minDistance = 15;
+//controls.maxDistance = 35;
 
-controls.minPolarAngle = Math.PI / 2.7;
-controls.maxPolarAngle = Math.PI / 6;
+//controls.minPolarAngle = Math.PI / 2.7;
+//controls.maxPolarAngle = Math.PI / 6;
 
 controls.autoRotate = false;
-controls.target = new THREE.Vector3(0, 5.5, 0);
+controls.target = new THREE.Vector3(0, 0, 0);
 controls.update();
 
 const target = new THREE.Object3D();
@@ -51,25 +53,38 @@ const spotLight = new THREE.SpotLight(0xffffff, 10000, 100, 0.22, 1);
 spotLight.position.set(0, 80, 0);
 spotLight.castShadow = true;
 spotLight.shadow.bias = -0.0001;
-scene.add(spotLight);
+//scene.add(spotLight);
 
 const spotLight2 = new THREE.SpotLight(0xffffff, 2500, 100, 0.22, 1);
 spotLight2.position.set(-10, 26, 20);
 spotLight2.castShadow = true;
 spotLight2.shadow.bias = -0.0001;
-scene.add(spotLight2);
+//scene.add(spotLight2);
 
 const spotLight3 = new THREE.SpotLight(0xffffff, 200, 100, 0.22, 1);
 spotLight3.position.set(20, 15, -20);
 spotLight3.castShadow = true;
 spotLight3.shadow.bias = -0.0001;
-scene.add(spotLight3);
+//scene.add(spotLight3);
 
 const spotLight4 = new THREE.SpotLight(0xffffff, 500, 100, 0.22, 1);
 spotLight4.position.set(-30, 26, 10);
 spotLight4.castShadow = true;
 spotLight4.shadow.bias = -0.0001;
-scene.add(spotLight4);
+//scene.add(spotLight4);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1); // skyColor, groundColor, intensity
+hemiLight.position.set(0, 20, 0);
+scene.add(hemiLight);
+
+// OR a very soft directional light
+const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+dirLight.position.set(5, 10, 7);
+dirLight.castShadow = false; // Or true, if you want shadows
+scene.add(dirLight);
 
 spotLight.target = target;
 spotLight2.target = target;
@@ -101,7 +116,7 @@ const bodyParts = [
   //'bein-rechts.glb',
   //'arm-rechts.glb',
   //'ImageToStl.com_Modelltisch-Basis+v42.glb',
-  "Tisch.glb",
+  "tisch-textured-wood.glb",
 ];
 
 const loader = new GLTFLoader().setPath("models/");
