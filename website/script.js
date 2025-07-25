@@ -116,6 +116,7 @@ const bodyParts = [
   //'bein-rechts.glb',
   //'arm-rechts.glb',
   //'ImageToStl.com_Modelltisch-Basis+v42.glb',
+  //"bildschirm.glb",
   "tisch-textured-wood.glb",
 ];
 
