@@ -1,5 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
+import processing.data_transfer as data_transfer
+
+data_transfer.loading("Test Buttonclick")
+
+data_transfer.load()
 
 app = Flask(__name__)
 
@@ -19,6 +24,7 @@ def windpark():
 def button1():
     # Do something for Button 1
     print("Button 1 clicked")
+    data_transfer.send("Button Clicked")
     return redirect(url_for('index'))
 
 @app.route('/button2', methods=['POST'])

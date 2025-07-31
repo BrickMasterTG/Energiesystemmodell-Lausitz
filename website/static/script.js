@@ -59,13 +59,13 @@ scene.add(dirLight);
 
 // Nur Dateinamen als Liste
 const bodyParts = [
+  "Oberflaeche.glb",
+  "Gestell.glb",
   "Solarkraftwerk.glb",
   "Kohlekraftwerk.glb",
   "Zug.glb",
   "Offshore-Solar.glb",
   "Vorhang.glb",
-  "Oberflaeche.glb",
-  "Gestell.glb",
   "Bildschrirm.glb",
   "Windpark.glb",
   "Stadt.glb",
@@ -124,7 +124,7 @@ window.addEventListener("click", (event) => {
     console.log(`GLB-Datei geklickt: ${fileName}`);
     alert(`GLB-Datei: ${fileName}`);
     const htmlFile = fileName.replace(/\.glb$/i, "").toLowerCase();
-    window.location.href = `${htmlFile}.html`;
+    window.location.href = `${htmlFile}`;
   } else {
     console.log("Kein Objekt getroffen");
   }

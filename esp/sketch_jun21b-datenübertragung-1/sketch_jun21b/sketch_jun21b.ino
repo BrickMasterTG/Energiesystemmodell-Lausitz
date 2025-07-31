@@ -53,7 +53,7 @@ void connect_mqttServer() {
     }
 
     Serial.print("🔄 Attempting MQTT connection... ");
-    if (client.connect("ESP32_TestClient")) {
+    if (client.connect("ESP32_Client_1")) {
       Serial.println("✅ connected!");
       client.subscribe("rpi/broadcast");
     } else {
@@ -67,14 +67,14 @@ void connect_mqttServer() {
 }
 
 void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("📨 Message arrived on topic: ");
-  Serial.println(topic);
+  //Serial.print("📨 Message arrived on topic: ");
+  //Serial.println(topic);
 
   String msg;
   for (unsigned int i = 0; i < length; i++) {
     msg += (char)message[i];
   }
-  Serial.println("Message: " + msg);
+  Serial.println("📨 Message arrived: " + msg);
 
   if (String(topic) == "rpi/broadcast") {
     if (msg == "10") {
@@ -101,7 +101,7 @@ void loop() {
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > 4000) {
+  if (now - lastMsg > 1000) {
     lastMsg = now;
 
     int sensorValue = random(50, 101); // Zufallswert von 50 bis 100
