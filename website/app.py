@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-
+import threading
+import time
 import processing.data_transfer as data_transfer
 
-data_transfer.loading()
-
-#data_transfer.load("Test Buttonclick")
-
 app = Flask(__name__)
+
+# MQTT in eigenem Thread starten
+def mqtt_thread():
+    data_transfer.loading()  # startet MQTT-Client und loop_start
+    while True:
+        # Hier ggf. Reconnect-Logik, wenn benötigt
+        time.sleep(1)
 
 @app.route('/models/<path:filename>') 
 def models(filename):
@@ -23,17 +27,20 @@ def windpark():
 
 @app.route('/button1', methods=['POST'])
 def button1():
-    # Do something for Button 1
     print("Button 1 clicked")
     data_transfer.send("Button Clicked")
-    return redirect(url_for('index'))
+    return redirect(url_for('windpark'))
 
 @app.route('/button2', methods=['POST'])
 def button2():
-    # Do something for Button 2
     print("Button 2 clicked")
     data_transfer.send(10)
-    return redirect(url_for('index'))
+    return redirect(url_for('windpark'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    # MQTT Thread als Daemon starten, damit er beim Programmende automatisch stoppt
+    thread = threading.Thread(target=mqtt_thread, daemon=True)
+    thread.start()
+
+    # Flask starten ohne debug=True (oder mit debug=False), damit kein Reload läuft
+    app.run(debug=False, port=5001)
