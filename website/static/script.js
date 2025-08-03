@@ -71,7 +71,7 @@ const bodyParts = [
   "Stadt.glb",
 ];
 
-const loader = new GLTFLoader().setPath("../models/");
+const loader = new GLTFLoader().setPath("/models/");
 
 const meshes = {}; // Key: Dateiname, Value: Mesh
 

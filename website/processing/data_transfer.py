@@ -1,29 +1,26 @@
 import paho.mqtt.client as mqtt
-from paho.mqtt import client as mqtt_client
-#from paho.mqtt.client import CallbackAPIVersion
-
-
 import time
 
-# Global variables
+# Globale Variablen
 client = None
 flag_connected = 0
 counter = 0
 
-def on_connect(client, userdata, flags, reasonCode, properties):
+def on_connect(client, userdata, flags, rc):
     global flag_connected
-    flag_connected = 1
-    client_subscriptions(client)
-    print("? Connected to MQTT server")
+    if rc == 0:
+        flag_connected = 1
+        print("✅ Connected to MQTT server")
+        client_subscriptions(client)
+    else:
+        print(f"❌ Failed to connect, return code {rc}")
 
-
-def on_disconnect(client, userdata, reasonCode, properties):
+def on_disconnect(client, userdata, rc):
     global flag_connected
     flag_connected = 0
-    print("? Disconnected from MQTT server")
+    print(f"⚠️ Disconnected from MQTT server, return code: {rc}")
 
-
-# Callback functions for each topic
+# Callback-Funktionen für Topics
 def callback_esp32_sensor1(client, userdata, msg):
     print('? ESP sensor1 data:', msg.payload.decode('utf-8'))
 
@@ -37,16 +34,14 @@ def client_subscriptions(client):
     client.subscribe("esp32/#")
     client.subscribe("rpi/broadcast")
 
-#global client, counter, flag_connected
-
-# Korrekte Initialisierung für paho-mqtt 2.x
-    
-#client = mqtt.Client("rpi_client1")
-client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, "rpi_client1")
-
 def loading():
+    global client, flag_connected, counter
+
     flag_connected = 0
     counter = 0
+
+    client = mqtt.Client("rpi_client1")
+    client.username_pw_set("modelltisch1", "strukturwandel")  # Username & Passwort VOR connect setzen
 
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
@@ -55,14 +50,13 @@ def loading():
     client.message_callback_add('rpi/broadcast', callback_rpi_broadcast)
 
     try:
-        client.connect('127.0.0.1', 1883)
+        client.connect("127.0.0.1", 1883)
     except Exception as e:
         print(f"! MQTT connection failed: {e}")
-        exit(1)  # oder return, wenn in Funktion
+        exit(1)
 
-    client.loop_start()  # <- muss immer gestartet werden, damit callbacks funktionieren
+    client.loop_start()
     print("? ......client setup complete............")
-
 
 def send(message):
     global client, counter, flag_connected
@@ -78,7 +72,9 @@ def send(message):
     except Exception as e:
         print(f"! Failed to publish MQTT message: {e}")
 
-# Initialisieren und Nachricht senden
-#loading()
-#time.sleep(1)  # kurz warten bis MQTT verbunden ist
-
+# Beispiel: So rufst du das auf
+if __name__ == "__main__":
+    loading()
+    time.sleep(2)  # Zeit zum Verbinden
+    #send("Hello MQTT!")
+    time.sleep(5)  # Zeit um Nachrichten zu senden bevor das Programm beendet wird
