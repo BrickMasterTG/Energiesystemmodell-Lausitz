@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Two Buttons Page</title>
+    <title>Windpark</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      #sensorChart {
+        max-width: 800px;
+        max-height: 300px;
+      }
+    </style>
   </head>
   <body>
     <h1>Click a Button</h1>
@@ -12,5 +19,55 @@
     <form action="/button2" method="post" style="margin-top: 10px">
       <button type="submit">Button 2</button>
     </form>
+    <h1>Live-Diagramm: ESP Sensor 1</h1>
+    <canvas id="sensorChart"></canvas>
+
+    <script>
+      const ctx = document.getElementById('sensorChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({ length: 20 }, (_, i) => i + 1),
+          datasets: [{
+            label: 'ESP Sensor 1',
+            data: [],
+            borderWidth: 2,
+            fill: false,
+            tension: 0,
+            animation: false
+          },
+          {
+            label: 'ESP Sensor 2',
+            data: [],
+            borderWidth: 2,
+            fill: false,
+            tension: 0,
+            animation: false
+          }]
+        },
+        options: {
+  scales: {
+    y: {
+      min: 0,
+      max: 100,
+      beginAtZero: true,
+      ticks: {
+        stepSize: 5
+      }
+    }
+  }
+}
+      });
+
+      async function fetchData() {
+        const res = await fetch('/api/sensors');
+        const json = await res.json();
+        chart.data.datasets[0].data = json.sensor1;
+        chart.data.datasets[1].data = json.sensor2;
+        chart.update();
+      }
+
+      setInterval(fetchData, 1000); // alle 1 Sekunde aktualisieren
+    </script>
   </body>
 </html>

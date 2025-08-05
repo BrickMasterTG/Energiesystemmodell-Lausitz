@@ -1,5 +1,12 @@
 import paho.mqtt.client as mqtt
 import time
+from collections import deque
+
+
+sensor1_data = deque(maxlen=20)
+sensor2_data = deque(maxlen=20)
+
+
 
 # Globale Variablen
 client = None
@@ -20,12 +27,17 @@ def on_disconnect(client, userdata, rc):
     flag_connected = 0
     print(f"⚠️ Disconnected from MQTT server, return code: {rc}")
 
-# Callback-Funktionen für Topics
 def callback_esp32_sensor1(client, userdata, msg):
-    print('? ESP sensor1 data:', msg.payload.decode('utf-8'))
+    value = float(msg.payload.decode('utf-8'))
+    sensor1_data.append(value)
+    print(f"📡 Sensor1: {value}")  # <- Ausgabe hinzufügen
 
 def callback_esp32_sensor2(client, userdata, msg):
-    print('? ESP sensor2 data:', msg.payload.decode('utf-8'))
+    value = float(msg.payload.decode('utf-8'))
+    sensor2_data.append(value)
+    print(f"📡 Sensor2: {value}")  # <- Ausgabe hinzufügen
+
+
 
 def callback_rpi_broadcast(client, userdata, msg):
     print('? RPi Broadcast message:', msg.payload.decode('utf-8'))
@@ -66,7 +78,8 @@ def send(message):
         return
 
     try:
-        client.publish("rpi/broadcast", f"{message} #{counter}")
+        #client.publish("rpi/broadcast", f"{message} #{counter}")
+        client.publish("rpi/broadcast", f"{message}")
         print(f"? Published: {message} #{counter}")
         counter += 1
     except Exception as e:

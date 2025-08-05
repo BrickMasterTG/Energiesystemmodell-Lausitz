@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 import threading
 import time
 import processing.data_transfer as data_transfer
+from processing.data_transfer import sensor1_data, sensor2_data
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -16,6 +18,13 @@ def mqtt_thread():
 def models(filename):
     print("Serving model file:", filename)
     return send_from_directory('models', filename)
+
+@app.route('/api/sensors')
+def get_sensor_data():
+    return jsonify({
+        "sensor1": list(sensor1_data),
+        "sensor2": list(sensor2_data)
+    })
 
 @app.route('/')
 def index():
@@ -34,7 +43,7 @@ def button1():
 @app.route('/button2', methods=['POST'])
 def button2():
     print("Button 2 clicked")
-    data_transfer.send(10)
+    data_transfer.send("10")
     return redirect(url_for('windpark'))
 
 if __name__ == '__main__':
