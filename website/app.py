@@ -34,6 +34,10 @@ def index():
 def windpark():
     return render_template('windpark.html')
 
+@app.route('/layout')
+def layout():
+    return render_template('layout-main.html')
+
 @app.route('/button1', methods=['POST'])
 def button1():
     print("Button 1 clicked")

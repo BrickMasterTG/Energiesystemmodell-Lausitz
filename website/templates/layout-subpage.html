@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Layout mit Balken</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: sans-serif;
+    }
+
+    header {
+      flex: 0 0 15%;
+      background-color: #333;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .green-bar {
+      height: 5px;
+      background-color: green;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .left {
+      width: 75%;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right {
+      width: 25%;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    footer {
+      flex: 0 0 15%;
+      background-color: #333;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Oberer Abschnitt</h1>
+  </header>
+
+  <div class="green-bar"></div> <!-- Balken zwischen Header und Main -->
+
+  <main>
+    <div class="left">
+      <p>Linker Bereich (75%)</p>
+    </div>
+    <div class="right">
+      <p>Rechter Bereich (25%)</p>
+    </div>
+  </main>
+
+  <div class="green-bar"></div> <!-- Balken zwischen Main und Footer -->
+
+  <footer>
+    <p>Unterer Abschnitt</p>
+  </footer>
+</body>
+</html>

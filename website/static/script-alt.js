@@ -2,57 +2,62 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// Container holen
-const container = document.getElementById("progress-container");
-const width = container.clientWidth;
-const height = container.clientHeight;
-
-// Szene
-const scene = new THREE.Scene();
-
-// Kamera
-const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-camera.position.set(3, 0, 2);
-
-// Renderer
+// Renderer und Szene
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xffffff);
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(width, height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-container.appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement);
 
-// Steuerung
+const scene = new THREE.Scene();
+
+// Kamera und Steuerung
+const camera = new THREE.PerspectiveCamera(
+  45,
+  window.innerWidth / window.innerHeight,
+  1,
+  1000
+);
+//camera.position.set(8, 40, 22);
+camera.position.set(3, 1, 2);
+camera.near = 0.1; // Nahe Clipping-Ebene
+camera.far = 500; // Entfernte Clipping-Ebene
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
+
 controls.minDistance = 3;
 controls.maxDistance = 3;
+
+//controls.minPolarAngle = Math.PI / 2.7;
+//controls.maxPolarAngle = 1.2;
+
 controls.autoRotate = false;
-controls.target.set(0, 0, 0);
+controls.target = new THREE.Vector3(0, 0, 0);
 controls.update();
 
-// Zielobjekt
 const target = new THREE.Object3D();
-target.position.set(0, 5, 0);
+target.position.set(0, 5, 0); // Zielpunkt
 scene.add(target);
 
-// Licht
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1); // skyColor, groundColor, intensity
 hemiLight.position.set(0, 20, 0);
 scene.add(hemiLight);
 
+// OR a very soft directional light
 const dirLight = new THREE.DirectionalLight(0xffffff, 2);
 dirLight.position.set(5, 10, 7);
-dirLight.castShadow = false;
+dirLight.castShadow = false; // Or true, if you want shadows
 scene.add(dirLight);
 
-// GLB-Dateien laden
+// Nur Dateinamen als Liste
 const bodyParts = [
   "Oberflaeche.glb",
   "Gestell.glb",
@@ -67,13 +72,15 @@ const bodyParts = [
 ];
 
 const loader = new GLTFLoader().setPath("/models/");
-const meshes = {};
+
+const meshes = {}; // Key: Dateiname, Value: Mesh
 
 bodyParts.forEach((fileName) => {
   loader.load(
     fileName,
     (gltf) => {
       const mesh = gltf.scene;
+
       mesh.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
@@ -81,6 +88,8 @@ bodyParts.forEach((fileName) => {
           child.userData = { fileName };
         }
       });
+
+      // RICHTIG: gesamter Mesh wird gespeichert
       meshes[fileName] = mesh;
       scene.add(mesh);
     },
@@ -93,11 +102,12 @@ bodyParts.forEach((fileName) => {
   );
 });
 
-// Raycasting
+// Raycasting für die Klick-Erkennung
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-function handleClick(event) {
+// Klick-Listener hinzufügen
+window.addEventListener("click", (event) => {
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -110,6 +120,7 @@ function handleClick(event) {
   if (intersects.length > 0) {
     const object = intersects[0].object;
     const fileName = object.userData.fileName;
+
     console.log(`GLB-Datei geklickt: ${fileName}`);
     alert(`GLB-Datei: ${fileName}`);
     const htmlFile = fileName.replace(/\.glb$/i, "").toLowerCase();
@@ -117,53 +128,16 @@ function handleClick(event) {
   } else {
     console.log("Kein Objekt getroffen");
   }
-}
+});
 
-
-// Resize-Handler – nur containerbasiert!
+// Anpassung bei Fenstergrößenänderung
 window.addEventListener("resize", () => {
-  const width = container.clientWidth;
-  const height = container.clientHeight;
-  camera.aspect = width / height;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(width, height);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-
-let mouseDown = false;
-let mouseMoved = false;
-let downPos = { x: 0, y: 0 };
-
-window.addEventListener("mousedown", (event) => {
-  if (event.button === 0) { // nur linker Klick
-    mouseDown = true;
-    mouseMoved = false;
-    downPos = { x: event.clientX, y: event.clientY };
-  }
-});
-
-window.addEventListener("mousemove", (event) => {
-  if (!mouseDown) return;
-
-  const dx = Math.abs(event.clientX - downPos.x);
-  const dy = Math.abs(event.clientY - downPos.y);
-
-  if (dx > 5 || dy > 5) {
-    mouseMoved = true;
-  }
-});
-
-window.addEventListener("mouseup", (event) => {
-  if (event.button !== 0) return; // nur linker Klick
-  mouseDown = false;
-
-  if (!mouseMoved) {
-    handleClick(event);
-  }
-});
-
-
-// Animation
+// Animationsloop
 function animate() {
   requestAnimationFrame(animate);
   controls.update();

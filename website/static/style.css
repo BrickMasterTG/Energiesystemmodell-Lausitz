@@ -1,31 +1,56 @@
-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: sans-serif;
-}
-
-h1,h4 {
-    position: absolute;
-    top: 10px;
-    left: 20px;
-    z-index: 10;
-    color: white;
-    text-shadow: 1px 1px 5px black;
-}
-h4 {
-    top: 50px;
-    }
-
-#canvas-container {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-}
-
-html,
-body {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
+    font-family: sans-serif;
     overflow: hidden;
+    /* optional, falls du kein Scrollen willst */
+}
+
+header,
+footer {
+    flex: 0 0 15%;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #f0f0f0;
+    position: relative;
+}
+
+#heading {
+    text-align: center;
+    padding: 10px;
+}
+
+h1,
+h4 {
+    margin: 0;
+    color: black;
+}
+
+.border {
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    margin-top: 5px;
+}
+
+#progress-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    /* falls nötig */
+}
+
+canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
 }
