@@ -24,8 +24,7 @@ uint8_t MAC_ESP1[6] = {0x84, 0x1F, 0xE8, 0x26, 0x58, 0xD8};
 uint8_t MAC_ESP2[6] = {0x20, 0x43, 0xA8, 0x6A, 0xFB, 0xDC};
 uint8_t MAC_ESP3[6] = {0x20, 0xE7, 0xC8, 0x6B, 0x4F, 0x18};
 uint8_t MAC_ESP4[6] = {0x8C, 0x4F, 0x00, 0x2E, 0x59, 0xE8};
-uint8_t MAC_ESP5[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // TODO: MAC von ESP5 eintragen
-
+uint8_t MAC_ESP5[6] = {0x20, 0xE7, 0xC8, 0x6B, 0x5D, 0x28};
 // ============================================================================
 // WIFI AP
 // ============================================================================
@@ -330,6 +329,11 @@ void handleForward() {
 
     Serial.printf("[LED] Forwarding to %s: %s\n", target.c_str(), payload.c_str());
     success = sendCmd(target.c_str(), "LED", 0, 0, 0, payload.c_str());
+
+  } else if (path.startsWith("/clear")) {
+    // Global LED clear command for ESP5
+    Serial.println("[LED] Sending GLOBAL CLEAR to ESP5");
+    success = sendCmd("esp5", "CLR", 0, 0);
 
   } else {
     server.send(400, "application/json", "{\"error\":\"Unknown path\"}");

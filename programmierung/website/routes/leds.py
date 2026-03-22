@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# routes/leds.py — Blueprint for LED synchronization
+# routes/leds.py — Blueprint for LED synchronization and Master-Reset
 
 from flask import Blueprint, jsonify, request
 from config import LED_MAPPING, VERBOSE
@@ -51,22 +51,32 @@ def api_leds_sync():
 
 @leds_bp.route("/api/leds/test", methods=["POST"])
 def api_leds_test():
-    """Sets all LEDs in the mapping to a specific color or off."""
+    """Hardware reset or test mode."""
     data = request.get_json(force=True)
     mode = data.get("mode", "off") # "green" or "off"
     
-    results = []
-    color = (0, 255, 0) if mode == "green" else (0, 0, 0)
-    val = 1 if mode == "green" else 0
-    
-    # We want to clear/set all strips (0-6)
-    for s in range(7):
-        # We use a broad range to cover most strips
-        path = f"/led?strip={s}&start=0&end=120&val={val}&r={color[0]}&g={color[1]}&b={color[2]}"
+    if mode == "off":
+        # New Master-Reset via the dedicated /clear endpoint on ESP-Host -> ESP5
         try:
-            res = host_forward("esp5", "GET", path, timeout=5)
-            results.append({"strip": s, "status": res.get("code")})
+            host_forward("esp5", "POST", "/clear", timeout=2.0)
+            return jsonify({"success": True, "mode": "off"})
         except Exception as e:
-            results.append({"strip": s, "error": str(e)})
-            
-    return jsonify({"success": True, "results": results})
+            return jsonify({"success": False, "error": str(e)}), 502
+
+    # Mode "green" or other test modes still use the loop to sweep mapped zones
+    val = 1 if mode == "green" else 0
+    color = (0, 255, 0) if mode == "green" else (0, 0, 0)
+    r_v, g_v, b_v = color
+
+    for flow_id, configs in LED_MAPPING.items():
+        cfg_list = configs if isinstance(configs, list) else [configs]
+        for cfg in cfg_list:
+            try:
+                strip = cfg["strip"]
+                start, end = cfg["range"]
+                path = f"/led?strip={strip}&start={start}&end={end}&val={val}&r={r_v}&g={g_v}&b={b_v}"
+                host_forward("esp5", "GET", path, timeout=1.5)
+            except:
+                continue
+
+    return jsonify({"success": True, "mode": mode})

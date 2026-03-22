@@ -72,7 +72,7 @@ def get_relay_id(identifier):
         if identifier.isdigit():
             return int(identifier)
         for k, v in RELAY_CONFIG.items():
-            if v["name"].lower() == identifier.lower():
+            if str(v["name"]).lower() == str(identifier).lower():
                 return k
     return None
 
@@ -129,23 +129,21 @@ def load_scenarios():
 # Maps flow identifiers to (strip, start, end, color_rgb)
 LED_MAPPING = {
     "coal": [
-        {"strip": 0, "range": (0, 40),  "color": (100, 100, 100)},
-        {"strip": 1, "range": (0, 40),  "color": (100, 100, 100)},
+        {"strip": 0, "range": (0, 40),  "color": (100, 100, 100)},#later
     ],
-    "solar":    {"strip": 2, "range": (0, 40),  "color": (0, 255, 0)},
-    "wind":     {"strip": 2, "range": (0, 20),  "color": (150, 150, 150)}, # split strip 2?
-    "gas":      {"strip": 5, "range": (0, 40),  "color": (255, 100, 0)},
-    "village":  {"strip": 6, "range": (0, 40),  "color": (0, 0, 255)},
-    # Main Grid (Long Strips 3 & 4)
+    "wind":    {"strip": 2, "range": (0, 22),  "color": (0, 255, 0)}, #done
+    "solar":     {"strip": 1, "range": (0, 58),  "color": (150, 150, 150)}, #done
+    "gas":      {"strip": 5, "range": (0, 40),  "color": (255, 100, 0)}, #later
+    "village":  {"strip": 6, "range": (0, 40),  "color": (0, 0, 255)}, #later
     "gridToExternal": [
-        {"strip": 3, "range": (0, 120), "color": (255, 255, 0)},
-        {"strip": 4, "range": (0, 120), "color": (255, 255, 0)},
+        {"strip": 5, "range": (0, 134), "color": (0, 255, 255)}, #done
+        {"strip": 6, "range": (0, 134), "color": (0, 255, 255)},
     ],
     "heatpump": [
-        {"strip": 3, "range": (0, 60),  "color": (255, 0, 0)},
-        {"strip": 4, "range": (0, 60),  "color": (255, 0, 0)},
+        {"strip": 3, "range": (0, 120),  "color": (255, 0, 0)}, #done
+        {"strip": 4, "range": (0, 120),  "color": (255, 0, 0)}, #done
     ],
-    "elektro":  {"strip": 5, "range": (20, 40), "color": (0, 255, 255)},
+    "elektro":  {"strip": 0, "range": (0, 68), "color": (0, 255, 255)}, #done
 }
 
 SCENARIOS = load_scenarios()

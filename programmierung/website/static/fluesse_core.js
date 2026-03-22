@@ -283,3 +283,46 @@ if (container && svg) {
     draw();
     window.addEventListener("resize", draw);
 }
+
+/**
+ * Turns off all nodes, stops animations and sends shutdown commands to hardware.
+ */
+async function allOff() {
+    console.log("[SYSTEM] All-Off triggered");
+
+    // 1. Update internal state for all nodes
+    if (typeof nodeDetails !== 'undefined') {
+        for (const id in nodeDetails) {
+            nodeDetails[id].currentState = "off";
+        }
+    }
+
+    // 2. Refresh UI and animations
+    if (typeof updateModalState === 'function' && typeof currentNodeId !== 'undefined' && currentNodeId) {
+        updateModalState(currentNodeId);
+    }
+    
+    if (typeof draw === 'function') {
+        draw();
+    }
+
+    // 3. Command Hardware
+    try {
+        // Execute Notaus scenario (relays off)
+        fetch("/api/scenario/execute", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scenario: "notaus" })
+        }).catch(e => console.error("Scenario Notaus failed:", e));
+
+        // Clear all LEDs physically
+        fetch("/api/leds/test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: "off" })
+        }).catch(e => console.error("LED Off failed:", e));
+        
+    } catch (e) {
+        console.error("Fatal All-Off hardware error:", e);
+    }
+}

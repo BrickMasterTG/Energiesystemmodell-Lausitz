@@ -37,49 +37,39 @@ function updateEdgeGroupStates() {
     groups.coal.flows = [coalActive];
     groups.coal.revs = [false];
   
-    // Solar group - two stripes, both flow together
+    // Solar group - single stripe matching config.py
     const solarActive = nodeProducesEnergy("solar");
-    groups.solar.flows = [solarActive, solarActive];
-    groups.solar.revs = [false, false]; // Producer: solar -> grid
+    groups.solar.flows = [solarActive];
+    groups.solar.revs = [false]; // Producer: solar -> grid
   
-    // Wind group - two stripes
+    // Wind group - single stripe matching config.py
     const windActive = nodeProducesEnergy("wind");
-    groups.wind.flows = [windActive, windActive];
-    groups.wind.revs = [false, false]; // Producer: wind -> grid
+    groups.wind.flows = [windActive];
+    groups.wind.revs = [false]; // Producer: wind -> grid
   
     // Gas group - single stripe
     const gasActive = nodeProducesEnergy("gas");
     groups.gas.flows = [gasActive];
     groups.gas.revs = [false]; // Producer: gas -> grid
   
-    // Village group - flows when village has demand (default: idle or on)
-    const villageActive =
-      nodeDetails.village &&
-      (nodeDetails.village.currentState === "on" ||
-        nodeDetails.village.currentState === "idle");
+    // Village group - simple independent toggle
+    const villageActive = nodeDetails.village && nodeDetails.village.currentState === "on";
     groups.village.flows = [villageActive];
-    groups.village.revs = [true]; // Consumer: grid -> village
+    groups.village.revs = [true]; // Consumer direction
   
-    // Grid to external - two stripes
-    const fuelcellActive = nodeDetails.elektro.currentState === "on_fuelcell";
-    const gridHasPower = solarActive || windActive || gasActive || coalActive || fuelcellActive;
+    // Grid to external - both stripes follow connection state
     const externalActive = nodeDetails.external && nodeDetails.external.currentState === "on";
-    
-    // Stripe 1: Export (green)
-    // Stripe 2: Import (yellow)
-    groups.gridToExternal.flows = [gridHasPower, externalActive];
+    groups.gridToExternal.flows = [externalActive, externalActive];
     groups.gridToExternal.revs = [false, true];
   
     // Heatpump
     const heatpumpActive = nodeProducesEnergy("heatpump");
     groups.heatpump.flows = [heatpumpActive, heatpumpActive];
-    groups.heatpump.revs = [false, true]; // Consumer: mid -> heatpump
+    groups.heatpump.revs = [false, true];
   
     // Elektro - single stripe
     const elektroState = nodeDetails.elektro.currentState;
     const elektroActive = elektroState === "on" || elektroState === "on_fuelcell";
     groups.elektro.flows = [elektroActive];
-    // Consumer: grid -> elektro (revs=true) when in 'on' (electrolysis) mode
-    // Producer: elektro -> grid (revs=false) when in 'on_fuelcell' (fuel cell) mode
     groups.elektro.revs = [elektroState === "on"];
 }

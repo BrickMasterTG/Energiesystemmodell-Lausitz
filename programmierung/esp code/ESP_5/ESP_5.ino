@@ -1,6 +1,9 @@
-#include <WiFi.h>
-#include <esp_now.h>
+
 #include <FastLED.h>
+#include <WiFi.h>
+#include <esp_mac.h>
+#include <esp_now.h>
+
 
 // ==========================
 // KONFIGURATION
@@ -14,13 +17,13 @@
 #define PIN_5 5
 #define PIN_6 4
 
-#define LEDS_0 40
-#define LEDS_1 40
-#define LEDS_2 40
-#define LEDS_3 120
-#define LEDS_4 120
-#define LEDS_5 40
-#define LEDS_6 40
+#define LEDS_0 68 //done
+#define LEDS_1 58 //done
+#define LEDS_2 22 //done
+#define LEDS_3 120 //done
+#define LEDS_4 120 //done
+#define LEDS_5 134 //done
+#define LEDS_6 134 //done
 
 #define BRIGHTNESS 60
 
@@ -33,19 +36,13 @@ CRGB leds5[LEDS_5];
 CRGB leds6[LEDS_6];
 
 struct StripPtr {
-  CRGB* leds;
+  CRGB *leds;
   int count;
 };
 
-StripPtr strips[7] = {
-  {leds0, LEDS_0},
-  {leds1, LEDS_1},
-  {leds2, LEDS_2},
-  {leds3, LEDS_3},
-  {leds4, LEDS_4},
-  {leds5, LEDS_5},
-  {leds6, LEDS_6}
-};
+StripPtr strips[7] = {{leds0, LEDS_0}, {leds1, LEDS_1}, {leds2, LEDS_2},
+                      {leds3, LEDS_3}, {leds4, LEDS_4}, {leds5, LEDS_5},
+                      {leds6, LEDS_6}};
 
 // ==========================
 // STATE
@@ -62,41 +59,66 @@ struct Segment {
 Segment segments[7][4];
 
 float phasePower = 0;
-float phaseHeat  = 0;
 
 // ==========================
 // ESP-NOW
 // ==========================
 
 typedef struct __attribute__((packed)) {
-  char  cmd[12];
+  char cmd[12];
   int16_t idx;
   int16_t val;
   int16_t extra;
-  char  payload[64];
+  char payload[64];
 } CmdMsg;
 
 typedef struct __attribute__((packed)) {
-  char    device[8];
+  char device[8];
   int16_t relays[8];
-  float   sensors[5];
-  float   temp;
-  float   flow;
+  float sensors[5];
+  float temp;
+  float flow;
   int16_t pwm;
-  int8_t  forward;
-  int8_t  running;
-  int8_t  relay_count;
-  int8_t  sensor_count;
+  int8_t forward;
+  int8_t running;
+  int8_t relay_count;
+  int8_t sensor_count;
   uint8_t rs232_seq;
-  char    last_rs232_res[64];
+  char last_rs232_res[64];
 } StatusMsg;
 
-void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
-  if (len != sizeof(CmdMsg)) return;
-  
+uint8_t HOST_MAC[6] = {0xFF, 0xFF, 0xFF,
+                       0xFF, 0xFF, 0xFF}; // Broadcast by default
+
+void sendStatus() {
+  StatusMsg sm;
+  memset(&sm, 0, sizeof(sm));
+  strcpy(sm.device, "esp5");
+  sm.relay_count = 0;
+  sm.sensor_count = 0;
+  sm.temp = NAN;
+
+  esp_now_send(HOST_MAC, (uint8_t *)&sm, sizeof(sm));
+}
+
+void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+  if (len != sizeof(CmdMsg))
+    return;
+
   CmdMsg msg;
   memcpy(&msg, data, sizeof(msg));
-  
+
+  if (strcmp(msg.cmd, "CLR") == 0) {
+    for (int s=0; s<7; s++) {
+      for (int seg=0; seg<4; seg++) {
+        segments[s][seg].active = false;
+      }
+    }
+    Serial.println("GLOBAL LED CLEAR");
+    sendStatus();
+    return;
+  }
+
   if (strcmp(msg.cmd, "LED") == 0) {
     // Payload: strip|start|end|val|r|g|b
     int s=0, start=0, end=0, val=0, r=0, g=0, b=0;
@@ -127,6 +149,8 @@ void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
         segments[s][slot].color  = CRGB(r, g, b);
       }
     }
+    // Acknowledgement via status update
+    sendStatus();
   }
 }
 
@@ -135,25 +159,24 @@ void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
 // ==========================
 
 void updateStrips() {
-  for (int s=0; s<7; s++) {
+  for (int s = 0; s < 7; s++) {
     fadeToBlackBy(strips[s].leds, strips[s].count, 40);
-    
-    for (int seg=0; seg<4; seg++) {
-      if (!segments[s][seg].active) continue;
-      
+
+    for (int seg = 0; seg < 4; seg++) {
+      if (!segments[s][seg].active)
+        continue;
+
       int start = segments[s][seg].start;
-      int end   = segments[s][seg].end;
+      int end = segments[s][seg].end;
       CRGB color = segments[s][seg].color;
-      
+
       for (int i = start; i < end && i < strips[s].count; i++) {
         float wave = sin((i * 0.20) + phasePower);
         int brightness = max(0, int(wave * 200));
-        
-        // Blend color with wave
+
         CRGB finalColor = color;
         finalColor.nscale8_video(brightness);
-        
-        // Add to existing (additive blending)
+
         strips[s].leds[i] += finalColor;
       }
     }
@@ -166,7 +189,33 @@ void updateStrips() {
 
 void setup() {
   Serial.begin(115200);
-  
+  delay(500); // Give serial monitor time
+  Serial.println("\n--- ESP5 LED Controller Start ---");
+
+  // WiFi & MAC
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+
+  uint8_t mac[6];
+  esp_efuse_mac_get_default(mac);
+  Serial.printf("ESP-NOW MAC: %02X:%02X:%02X:%02X:%02X:%02X\n", mac[0], mac[1],
+                mac[2], mac[3], mac[4], mac[5]);
+
+  // ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+  esp_now_register_recv_cb(onReceive);
+
+  // Peer Registration (Broadcast)
+  esp_now_peer_info_t peer = {};
+  memcpy(peer.peer_addr, HOST_MAC, 6);
+  peer.channel = 1; // Standard channel
+  peer.encrypt = false;
+  esp_now_add_peer(&peer);
+
+  // FastLED Setup
   FastLED.addLeds<WS2812B, PIN_0, GRB>(leds0, LEDS_0);
   FastLED.addLeds<WS2812B, PIN_1, GRB>(leds1, LEDS_1);
   FastLED.addLeds<WS2812B, PIN_2, GRB>(leds2, LEDS_2);
@@ -174,46 +223,28 @@ void setup() {
   FastLED.addLeds<WS2812B, PIN_4, GRB>(leds4, LEDS_4);
   FastLED.addLeds<WS2812B, PIN_5, GRB>(leds5, LEDS_5);
   FastLED.addLeds<WS2812B, PIN_6, GRB>(leds6, LEDS_6);
-  
   FastLED.setBrightness(BRIGHTNESS);
-  
-  WiFi.mode(WIFI_STA);
-  Serial.print("ESP-NOW MAC: ");
-  Serial.println(WiFi.macAddress());
-  
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    return;
-  }
-  esp_now_register_recv_cb(onReceive);
-  
+
   // Clear segments
-  for (int s=0; s<7; s++) {
-    for (int seg=0; seg<4; seg++) {
+  for (int s = 0; s < 7; s++) {
+    for (int seg = 0; seg < 4; seg++) {
       segments[s][seg].active = false;
     }
   }
+
+  Serial.println("ESP5 setup complete");
 }
 
 void loop() {
   updateStrips();
-  
   phasePower += 0.18;
-  
   FastLED.show();
   delay(20);
-  
-  // Send heartbeat status to host
+
+  // Heartbeat status to host every 2 seconds
   static unsigned long lastStatus = 0;
   if (millis() - lastStatus > 2000) {
     lastStatus = millis();
-    // Host logic expects these status messages to track online status
-    StatusMsg sm;
-    memset(&sm, 0, sizeof(sm));
-    strcpy(sm.device, "esp5");
-    // Send to host (broadcast or specific MAC if known, for now broadcast)
-    uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    // Note: registerPeer would be needed here too if sending to specific, 
-    // but for status reporting, host just needs to receive.
+    sendStatus();
   }
 }
