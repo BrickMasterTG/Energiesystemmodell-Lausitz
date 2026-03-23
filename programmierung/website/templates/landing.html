@@ -18,17 +18,20 @@
     <nav class="global-nav">
         <a href="/" class="nav-item active">
             <span class="nav-icon">🏠</span>
-            <span>Start-Einführung</span>
+            <span>Start</span>
         </a>
         <a href="/fluesse" class="nav-item">
             <span class="nav-icon">📊</span>
-            <span>Energieflüsse</span>
+            <span>Flüsse</span>
         </a>
-        <a href="/dashboard" class="nav-item">
-            <span class="nav-icon">⚙️</span>
-            <span>Übersicht</span>
+        <a href="/systemsteuerung" class="nav-item">
+            <span class="nav-icon">🕹️</span>
+            <span>Steuerung</span>
         </a>
     </nav>
+
+
+
 
     <!-- Hero Section -->
     <section class="hero">
@@ -49,8 +52,8 @@
                 in der Region Lausitz. Erleben Sie Energiemanagement in Echtzeit.
             </p>
             <div class="hero-buttons">
-                <a href="/dashboard" class="btn btn-primary">
-                    <span>Zum Dashboard</span>
+                <a href="/systemsteuerung" class="btn btn-primary">
+                    <span>Zur Steuerung</span>
                     <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
@@ -155,142 +158,7 @@
                     </p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Control Center Section -->
-    <section class="controls" id="controls">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Systemsteuerung</h2>
-                <p class="section-description">
-                    Steuern Sie alle Energiesysteme direkt von hier aus
-                </p>
-            </div>
-
-            <!-- Scenario Controls -->
-            <div class="control-section">
-                <div class="control-header">
-                    <h3 class="control-title">🎬 Szenarien</h3>
-                    <div class="status-badge" id="scenario-status">Bereit</div>
-                </div>
-                <div class="scenarios-container" id="scenarios-container">
-                    <div class="loading-spinner">Lade Szenarien...</div>
-                </div>
-            </div>
-
-            <!-- System Grid -->
-            <div class="system-grid">
-                <!-- Coal Power Plant -->
-                <div class="system-card" id="card-coal">
-                    <div class="card-header">
-                        <div class="card-icon">🏭</div>
-                        <h3 class="card-title">Kohlekraftwerk</h3>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-coal"></div>
-                    <div class="card-sensors" id="sensors-coal"></div>
-                    <div class="relay-list" id="coal-controls">
-                        <div class="loading-spinner">Lade...</div>
-                    </div>
-                </div>
-
-                <!-- Gas Power Plant -->
-                <div class="system-card" id="card-gas">
-                    <div class="card-header">
-                        <div class="card-icon">⛽</div>
-                        <h3 class="card-title">Gaskraftwerk</h3>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-gas"></div>
-                    <div class="card-sensors" id="sensors-gas"></div>
-                    <div class="relay-list" id="gas-controls">
-                        <div class="loading-spinner">Lade...</div>
-                    </div>
-                </div>
-
-                <!-- Elektrolyseur -->
-                <div class="system-card" id="card-electro">
-                    <div class="card-header">
-                        <div class="card-icon">💧</div>
-                        <h3 class="card-title">Elektrolyseur</h3>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-electro"></div>
-                    <div class="card-sensors" id="sensors-electro"></div>
-                    <div class="relay-list" id="electro-controls">
-                        <div class="loading-spinner">Lade...</div>
-                    </div>
-                </div>
-
-                <!-- Wärmepumpe -->
-                <div class="system-card" id="card-lake">
-                    <div class="card-header">
-                        <div class="card-icon">☀️</div>
-                        <h3 class="card-title">Wärmepumpe</h3>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-lake"></div>
-                    <div class="card-sensors" id="sensors-lake"></div>
-                    <div class="relay-list" id="lake-controls">
-                        <div class="loading-spinner">Lade...</div>
-                    </div>
-                </div>
-
-                <!-- Wind Power -->
-                <div class="system-card" id="card-wind">
-                    <div class="card-header">
-                        <div class="card-icon">💨</div>
-                        <h3 class="card-title">Windkraft</h3>
-                    </div>
-                    <div class="card-status">
-                        <span class="status-label">Status:</span>
-                        <span class="status-value highlight" id="wind-status">--</span>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-wind"></div>
-                    <div class="card-sensors" id="sensors-wind"></div>
-                    <div class="control-group-centered">
-                        <div class="button-group">
-                            <button class="btn-control" onclick="setWind(1)">AN</button>
-                            <button class="btn-control" onclick="setWind(0)">AUS</button>
-                        </div>
-                    </div>
-                    <div class="relay-list" id="wind-controls"></div>
-                </div>
-
-                <!-- Train System -->
-                <div class="system-card" id="card-train">
-                    <div class="card-header">
-                        <div class="card-icon">🚂</div>
-                        <h3 class="card-title">Modellbahn</h3>
-                    </div>
-                    <div class="card-status">
-                        <span class="status-label">Geschwindigkeit:</span>
-                        <span class="status-value highlight" id="train-pwm">0</span>
-                    </div>
-                    <div class="card-scenarios" id="scenarios-train"></div>
-                    <div class="card-sensors" id="sensors-train"></div>
-                    <div class="slider-container">
-                        <input type="range" id="train-slider" class="control-slider" min="0" max="255" value="0"
-                            oninput="updateTrainPWM(this.value)">
-                        <button class="btn-control btn-stop" onclick="stopTrain()">Stop</button>
-                    </div>
-                    <div class="relay-list" id="train-controls"></div>
-                </div>
-            </div>
-
-            <!-- Reserve / Other Controls (Collapsible) -->
-            <div class="control-section collapsed-section">
-                <div class="control-header" onclick="toggleReserveSection()" style="cursor: pointer; margin-bottom: 0;">
-                    <h3 class="control-title" style="font-size: 1.2rem;">🔌 Sonstige / Reserve</h3>
-                    <span id="reserve-toggle-icon">▼</span>
-                </div>
-                <div id="reserve-controls-container" style="display: none; margin-top: 20px;">
-                    <div class="relay-grid" id="reserve-controls">
-                        <!-- Reserve items go here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- System Architecture Section -->
+    <!-- Architecture Section -->
     <section class="architecture">
         <div class="container">
             <div class="architecture-content">
@@ -319,7 +187,7 @@
                             <span>RESTful API für alle Systemfunktionen</span>
                         </li>
                     </ul>
-                    <a href="/dashboard" class="btn btn-primary">
+                    <a href="/systemsteuerung" class="btn btn-primary">
                         <span>System steuern</span>
                         <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
@@ -357,18 +225,17 @@
             </div>
         </div>
     </section>
-
     <!-- CTA Section -->
     <section class="cta">
         <div class="container">
             <div class="cta-content">
                 <h2 class="cta-title">Bereit, das System zu steuern?</h2>
                 <p class="cta-description">
-                    Greifen Sie auf das vollständige Dashboard zu und übernehmen Sie die Kontrolle
-                    über alle Systemkomponenten in Echtzeit.
+                    Übernehmen Sie die Kontrolle über alle Systemkomponenten in Echtzeit.
                 </p>
-                <a href="/dashboard" class="btn btn-primary btn-large">
-                    <span>Zum technischen Dashboard</span>
+                <a href="/systemsteuerung" class="btn btn-primary btn-large">
+                    <span>Zur Systemsteuerung</span>
+
                     <svg class="btn-icon" width="24" height="24" viewBox="0 0 20 20" fill="none">
                         <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
@@ -394,6 +261,7 @@
     </footer>
 
     <script src="/static/landing.js"></script>
+    <script src="/static/global_ux.js"></script>
 </body>
 
 </html>
