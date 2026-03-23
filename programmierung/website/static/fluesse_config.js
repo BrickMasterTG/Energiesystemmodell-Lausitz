@@ -189,7 +189,7 @@ const nodes = {
   solar: { label: "Solar", x: 0.52, y: 0.58, visible: true },
   wind: { label: "Windrad", x: 0.63, y: 0.64, visible: true },
   gridNode: { label: "Netzknoten", x: 0.68, y: 0.5, visible: true },
-  external: { label: "Stromnetzanschluss", x: 0.74, y: 0.18, visible: true },
+  external: { label: "Netzanschluss", x: 0.68, y: 0.18, visible: true },
   gas: { label: "Gaskraftwerk", x: 0.88, y: 0.3, visible: true },
   elektro: { label: "Elektrolyse", x: 0.42, y: 0.82, visible: true },
   heatpump: { label: "Wärmepumpe", x: 0.68, y: 0.88, visible: true },
@@ -202,26 +202,27 @@ const nodes = {
   r_elctro_coal_bend: { x: 0.52, y: 0.72 },
   r_village1: { x: 0.38, y: 0.44 },
   r_village2: { x: 0.44, y: 0.38 },
-  r_village3: { x: 0.68, y: 0.38 },
-  r_solar1: { x: 0.58, y: 0.42 },
-  r_solar2: { x: 0.665, y: 0.42 },
+  r_village3: { x: 0.64, y: 0.38 },
+  r_solar1: { x: 0.58, y: 0.5 },
   r_gas_bend: { x: 0.88, y: 0.5 },
   r_elekt1: { x: 0.52, y: 0.82 },
-  r_elekt2: { x: 0.6, y: 0.55 },
+
+  r_elekt2: { x: 0.55, y: 0.72 },
+  r_elekt3: { x: 0.6, y: 0.55 },
 };
 
 // Node relationship configuration
 const powerEdgeGroups = {
   coal: {
     colors: ["grey"],
+    groupOffset: -7,
     edges: [
       { from: "coal", to: "r_coal_bend" },
       { from: "r_coal_bend", to: "r_coal_bend2" },
       { from: "r_coal_bend2", to: "r_coal_bend3" },
-      { from: "r_coal_bend3", to: "r_coal_bend4" },
-      { from: "r_coal_bend4", to: "r_coal_bend5" },
-      { from: "r_coal_bend5", to: "r_elctro_coal_bend" },
-      { from: "r_elctro_coal_bend", to: "r_elekt2" },
+      { from: "r_coal_bend3", to: "r_village2" },
+      { from: "r_village2", to: "r_village3" },
+      { from: "r_village3", to: "gridNode" },
     ],
     flows: [false],
     revs: [false],
@@ -230,8 +231,7 @@ const powerEdgeGroups = {
     colors: ["green"],
     edges: [
       { from: "solar", to: "r_solar1" },
-      { from: "r_solar1", to: "r_solar2" },
-      { from: "r_solar2", to: "gridNode" },
+      { from: "r_solar1", to: "gridNode" }
     ],
     flows: [false],
     revs: [false],
@@ -263,23 +263,23 @@ const powerEdgeGroups = {
     revs: [false],
   },
   gridToExternal: {
-    colors: ["green", "yellow"],
+    colors: ["green"],
     edges: [{ from: "gridNode", to: "external" }],
-    flows: [false, false],
-    revs: [false, false],
+    flows: [false],
+    revs: [false],
   },
   heatpump: {
-    colors: ["yellow", "red"],
+    colors: ["yellow"],
     edges: [{ from: "gridNode", to: "heatpump" }],
-    flows: [false, false],
-    revs: [false, true],
+    flows: [false],
+    revs: [false],
   },
   elektro: {
     colors: ["yellow"],
     edges: [
       { from: "elektro", to: "r_elekt1" },
-      { from: "r_elekt1", to: "r_elekt2" },
-      { from: "r_elekt2", to: "gridNode" },
+      { from: "r_elekt1", to: "r_elekt3" },
+      { from: "r_elekt3", to: "gridNode" },
     ],
     flows: [false],
     revs: [false],
@@ -289,19 +289,29 @@ const powerEdgeGroups = {
 const heatEdgeGroups = {
   coal: {
     colors: ["grey"],
-    edges: powerEdgeGroups.coal.edges,
+    edges: [
+      { from: "coal", to: "r_coal_bend" },
+      { from: "r_coal_bend", to: "r_coal_bend2" },
+      { from: "r_coal_bend2", to: "r_coal_bend3" },
+      { from: "r_coal_bend3", to: "r_coal_bend4" },
+      { from: "r_coal_bend4", to: "r_coal_bend5" },
+      { from: "r_coal_bend5", to: "r_elctro_coal_bend" },
+      { from: "r_elctro_coal_bend", to: "r_elekt2" },
+      { from: "r_elekt2", to: "r_elekt3" },
+      { from: "r_elekt3", to: "gridNode" },
+    ],
     flows: [false],
     revs: [false],
   },
   solar: {
     colors: ["blue"],
-    edges: powerEdgeGroups.solar.edges,
+    edges: [],
     flows: [false],
     revs: [false],
   },
   wind: {
     colors: ["grey"],
-    edges: powerEdgeGroups.wind.edges,
+    edges: [],
     flows: [false],
     revs: [false],
   },
@@ -331,7 +341,7 @@ const heatEdgeGroups = {
   },
   elektro: {
     colors: ["red"],
-    edges: powerEdgeGroups.elektro.edges,
+    edges: [],
     flows: [false],
     revs: [false],
   },
@@ -350,7 +360,7 @@ const routingNodeToGroup = {
   r_village2: "solar",
   r_village3: "solar",
   r_elekt1: "elektro",
-  r_elekt2: "elektro",
+  r_elekt3: "elektro",
 };
 
 const producerNodeToGroup = {

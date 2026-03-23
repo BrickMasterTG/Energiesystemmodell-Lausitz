@@ -15,6 +15,7 @@ function getEdgeGroups() {
 }
 
 // Draw all edges for a specific group - each color stripe has independent flow control
+// Updated to handle corners correctly using bisector offsets
 function drawEdgeGroup(groupId, W, H) {
   const groups = getEdgeGroups();
   const group = groups[groupId];
@@ -22,49 +23,133 @@ function drawEdgeGroup(groupId, W, H) {
 
   const numColors = group.colors.length;
   const perStripe = numColors === 1 ? 7 : 6;
+  const baseOffset = group.groupOffset || 0;
 
-  // Draw each edge segment in the group
-  for (const e of group.edges) {
-    const n1 = nodes[e.from],
-      n2 = nodes[e.to];
-    if (!n1 || !n2) continue;
+  // 1. Build a map of nodes to their edges in this group
+  const nodeEdgeMap = {}; // nodeId -> [edgeIndices]
+  group.edges.forEach((e, idx) => {
+    if (!nodeEdgeMap[e.from]) nodeEdgeMap[e.from] = [];
+    if (!nodeEdgeMap[e.to]) nodeEdgeMap[e.to] = [];
+    nodeEdgeMap[e.from].push(idx);
+    nodeEdgeMap[e.to].push(idx);
+  });
 
-    const cx1 = n1.x * W,
-      cy1 = n1.y * H;
-    const cx2 = n2.x * W,
-      cy2 = n2.y * H;
-
-    const p1 = n1.visible ? clipToNode(cx1, cy1, cx2, cy2) : { x: cx1, y: cy1 };
-    const p2 = n2.visible ? clipToNode(cx2, cy2, cx1, cy1) : { x: cx2, y: cy2 };
-
-    const dx = p2.x - p1.x,
-      dy = p2.y - p1.y;
+  // helper to get segment normal
+  const getNormal = (p1, p2) => {
+    const dx = p2.x - p1.x, dy = p2.y - p1.y;
     const len = Math.sqrt(dx * dx + dy * dy) || 1;
-    const px = -dy / len,
-      py = dx / len;
+    return { x: -dy / len, y: dx / len };
+  };
 
-    // Draw each color stripe with its own flow state and direction
+  // 2. Pre-calculate offset points for each stripe for each node
+  const nodeOffsetPoints = {}; // nodeId -> stripeIndex -> {x, y}
+
+  for (const nodeId in nodeEdgeMap) {
+    const n = nodes[nodeId];
+    if (!n) continue;
+    
+    // Base node position
+    const nPos = { x: n.x * W, y: n.y * H };
+    nodeOffsetPoints[nodeId] = [];
+
+    // Find connected vectors
+    const connectedEdges = nodeEdgeMap[nodeId].map(idx => group.edges[idx]);
+    const vectors = connectedEdges.map(e => {
+        const otherId = (e.from === nodeId) ? e.to : e.from;
+        const other = nodes[otherId];
+        const dx = (other.x - n.x) * W, dy = (other.y - n.y) * H;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        return { x: dx / len, y: dy / len, edge: e, otherId };
+    });
+
     for (let i = 0; i < numColors; i++) {
-      const offset = (i - (numColors - 1) / 2) * perStripe;
-      const line = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line",
-      );
-      line.setAttribute("x1", p1.x + px * offset);
-      line.setAttribute("y1", p1.y + py * offset);
-      line.setAttribute("x2", p2.x + px * offset);
-      line.setAttribute("y2", p2.y + py * offset);
+      const offsetVal = baseOffset + (i - (numColors - 1) / 2) * perStripe;
+
+      if (vectors.length === 1) {
+        // Tip of a path
+        const v = vectors[0];
+        const norm = { x: -v.y, y: v.x };
+        // if the edge starts at this node, normal is fine. 
+        // if it ends here, normal is reversed? No, the math works out if we treat normals consistently.
+        // Actually, let's be careful about direction.
+        const actualNorm = (v.edge.from === nodeId) ? norm : { x: v.y, y: -v.x };
+        nodeOffsetPoints[nodeId][i] = { x: nPos.x + actualNorm.x * offsetVal, y: nPos.y + actualNorm.y * offsetVal };
+      } else if (vectors.length === 2) {
+        // Corner between two segments
+        const v1 = vectors[0], v2 = vectors[1];
+        
+        // Normals for segments (relative to nodeId moving AWAY)
+        // norm1 is to the "left" of v1
+        const n1 = { x: -v1.y, y: v1.x }; 
+        const n2 = { x: -v2.y, y: v2.x };
+        
+        // The business logic: we want are "left-hand" offset lines to meet.
+        // For segment 1: we offset along n1 if nodeId is 'from', or -n1 if nodeId is 'to'
+        const sn1 = (v1.edge.from === nodeId) ? n1 : { x: v1.y, y: -v1.x };
+        const sn2 = (v2.edge.from === nodeId) ? n2 : { x: v2.y, y: -v2.x };
+        
+        // Bisector direction
+        const bx = (sn1.x + sn2.x), by = (sn1.y + sn2.y);
+        const blen = Math.sqrt(bx * bx + by * by) || 0.001;
+        const b = { x: bx / blen, y: by / blen };
+        
+        // Miter length: offsetVal / cos(theta/2) where theta is angle between sn1 and sn2?
+        // Simpler: offsetVal / dot(b, sn1)
+        const dot = b.x * sn1.x + b.y * sn1.y;
+        const miterRatio = Math.abs(dot) < 0.1 ? 1 : 1 / dot;
+        
+        nodeOffsetPoints[nodeId][i] = { x: nPos.x + b.x * offsetVal * miterRatio, y: nPos.y + b.y * offsetVal * miterRatio };
+      } else {
+        // Intersection or node with 3+ connections (rare)
+        nodeOffsetPoints[nodeId][i] = { x: nPos.x, y: nPos.y };
+      }
+    }
+  }
+
+  // 3. Draw each edge using pre-calculated points
+  group.edges.forEach((e, eIdx) => {
+    const n1 = nodes[e.from], n2 = nodes[e.to];
+    if (!n1 || !n2) return;
+
+    for (let i = 0; i < numColors; i++) {
+      let p1 = nodeOffsetPoints[e.from][i];
+      let p2 = nodeOffsetPoints[e.to][i];
+
+      // Clipping for visible nodes (actual components)
+      if (n1.visible) {
+        const cx1 = n1.x * W, cy1 = n1.y * H;
+        const cx2 = n2.x * W, cy2 = n2.y * H;
+        const clip = clipToNode(cx1, cy1, cx2, cy2);
+        const norm = getNormal({x: cx1, y: cy1}, {x: cx2, y: cy2});
+        const stripeOffset = baseOffset + (i - (numColors - 1) / 2) * perStripe;
+        p1 = { x: clip.x + norm.x * stripeOffset, y: clip.y + norm.y * stripeOffset };
+      }
+      if (n2.visible) {
+        const cx1 = n1.x * W, cy1 = n1.y * H;
+        const cx2 = n2.x * W, cy2 = n2.y * H;
+        const clip = clipToNode(cx2, cy2, cx1, cy1);
+        const norm = getNormal({x: cx1, y: cy1}, {x: cx2, y: cy2});
+        const stripeOffset = baseOffset + (i - (numColors - 1) / 2) * perStripe;
+        p2 = { x: clip.x + norm.x * stripeOffset, y: clip.y + norm.y * stripeOffset };
+      }
+
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", p1.x);
+      line.setAttribute("y1", p1.y);
+      line.setAttribute("x2", p2.x);
+      line.setAttribute("y2", p2.y);
       line.setAttribute("stroke-width", perStripe - (numColors > 1 ? 1.5 : 0));
 
-      let cls = "line " + group.colors[i];
+      let cls = "line " + (group.flows[i] ? group.colors[i] : "black");
       if (group.flows[i]) {
         cls += group.revs[i] ? " flow-rev" : " flow";
       }
       line.setAttribute("class", cls);
       svg.appendChild(line);
     }
-  }
+  });
 }
+
 
 // Legacy function for individual edges (kept for compatibility)
 function drawEdge(e, W, H) {
@@ -95,14 +180,15 @@ function drawEdge(e, W, H) {
     py = dx / len;
 
   for (let i = 0; i < N; i++) {
-    const offset = (i - (N - 1) / 2) * perStripe;
+    const baseOffset = e.offset || 0;
+    const offset = baseOffset + (i - (N - 1) / 2) * perStripe;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", p1.x + px * offset);
     line.setAttribute("y1", p1.y + py * offset);
     line.setAttribute("x2", p2.x + px * offset);
     line.setAttribute("y2", p2.y + py * offset);
     line.setAttribute("stroke-width", perStripe - (N > 1 ? 1.5 : 0));
-    let cls = "line " + colors[i];
+    let cls = "line " + (flows[i] ? colors[i] : "black");
     if (flows[i]) cls += revs[i] ? " flow-rev" : " flow";
     line.setAttribute("class", cls);
     svg.appendChild(line);
