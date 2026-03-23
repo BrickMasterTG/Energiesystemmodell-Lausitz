@@ -63,8 +63,6 @@
     // GLOBAL ACTIONS
     // ============================================================================
     window.triggerNotaus = async function () {
-        if (!confirm('NOT-AUS bestätigen? Alle Systeme werden abgeschaltet.')) return;
-
         try {
             // 1. Send Scenario Stop
             await fetch('/api/scenario/execute', {

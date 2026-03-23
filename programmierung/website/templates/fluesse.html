@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/static/fluesse.css">
     <link rel="stylesheet" href="/static/global_nav.css">
 </head>
+
 <body>
     <!-- Global Navigation -->
     <nav class="global-nav">
@@ -16,7 +18,7 @@
         </a>
         <a href="/fluesse" class="nav-item active">
             <span class="nav-icon">📊</span>
-            <span>Flüsse</span>
+            <span>Energieflüsse</span>
         </a>
         <a href="/systemsteuerung" class="nav-item">
             <span class="nav-icon">🕹️</span>
@@ -31,8 +33,9 @@
         <svg id="grid"></svg>
         <div class="old-nav-hidden" style="display: none;">
             <a href="/" class="back-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
                 Zurück
             </a>
@@ -43,16 +46,22 @@
         </div>
 
         <div class="legend" id="system-legend">
-            <div class="legend-item active" id="legend-item-1"><div class="legend-line green" id="legend-line-1"></div><span id="legend-text-1">Stromerzeugung</span></div>
-            <div class="legend-item active" id="legend-item-2"><div class="legend-line yellow" id="legend-line-2"></div><span id="legend-text-2">Verteilung</span></div>
-            <div class="legend-item active"><div class="legend-line grey"></div>Passiv</div>
+            <div class="legend-item active" id="legend-item-1">
+                <div class="legend-line green" id="legend-line-1"></div><span id="legend-text-1">Stromerzeugung</span>
+            </div>
+            <div class="legend-item active" id="legend-item-2">
+                <div class="legend-line yellow" id="legend-line-2"></div><span id="legend-text-2">Verteilung</span>
+            </div>
+            <div class="legend-item active">
+                <div class="legend-line grey"></div>Passiv
+            </div>
         </div>
         <div class="system-switch">
             <button class="system-btn active" id="btn-power" onclick="setActiveSystem('power')">
                 <span class="btn-icon">⚡</span> Strom
             </button>
             <button class="system-btn" id="btn-heat" onclick="setActiveSystem('heat')">
-                <span class="btn-icon">🔥</span> Wärme
+                <span class="btn-icon">🔥</span> Fernwärme
             </button>
             <button class="system-btn danger" id="btn-all-off" onclick="allOff()">
                 <span class="btn-icon">⏹️</span> Alles Aus
@@ -105,4 +114,5 @@
     <script src="/static/fluesse_core.js"></script>
     <script src="/static/global_ux.js"></script>
 </body>
+
 </html>

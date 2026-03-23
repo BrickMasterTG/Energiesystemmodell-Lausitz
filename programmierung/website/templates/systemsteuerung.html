@@ -31,22 +31,22 @@
             gap: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             opacity: 0.6;
         }
-        
+
         .admin-corner-btn:hover {
             opacity: 1;
             background: rgba(0, 0, 0, 0.8);
             transform: translateY(-2px);
             border-color: rgba(255, 255, 255, 0.2);
         }
-        
+
         .controls-wrapper {
             padding-top: 40px;
             padding-bottom: 100px;
         }
-        
+
         @media (max-width: 600px) {
             .admin-corner-btn {
                 bottom: 100px;
@@ -67,7 +67,7 @@
         </a>
         <a href="/fluesse" class="nav-item">
             <span class="nav-icon">📊</span>
-            <span>Flüsse</span>
+            <span>Energieflüsse</span>
         </a>
         <a href="/systemsteuerung" class="nav-item active">
             <span class="nav-icon">🕹️</span>
@@ -203,7 +203,8 @@
 
                 <!-- Reserve / Other Controls (Collapsible) -->
                 <div class="control-section collapsed-section">
-                    <div class="control-header" onclick="toggleReserveSection()" style="cursor: pointer; margin-bottom: 0;">
+                    <div class="control-header" onclick="toggleReserveSection()"
+                        style="cursor: pointer; margin-bottom: 0;">
                         <h3 class="control-title" style="font-size: 1.2rem;">🔌 Sonstige / Reserve</h3>
                         <span id="reserve-toggle-icon">▼</span>
                     </div>
