@@ -310,5 +310,29 @@
                 "val": 1
             }
         ]
+    },
+    "netz_import": {
+        "name": "Netzbezug",
+        "description": "Strom aus dem Netz beziehen",
+        "target_card": "external",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 1 }
+        ]
+    },
+    "netz_export": {
+        "name": "Netzeinspeisung",
+        "description": "Strom in das Netz einspeisen",
+        "target_card": "external",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 1 }
+        ]
+    },
+    "netz_aus": {
+        "name": "Netzanschluss aus",
+        "description": "Vom Netz trennen",
+        "target_card": "external",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 0 }
+        ]
     }
 }

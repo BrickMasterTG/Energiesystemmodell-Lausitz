@@ -121,6 +121,10 @@ async function runScenario(scenarioKey) {
        const sid = scenarioKey.toLowerCase();
        if (sid === "tank_in_brennstoffzelle") {
            nodeDetails[currentNodeId].currentState = "on_fuelcell";
+       } else if (sid.includes("import")) {
+           nodeDetails[currentNodeId].currentState = "on_import";
+       } else if (sid.includes("export")) {
+           nodeDetails[currentNodeId].currentState = "on_export";
        } else if (sid.includes("startup") || sid.includes("_an") || sid.includes("on") || sid.includes("start")) {
            nodeDetails[currentNodeId].currentState = "on";
        } else if (sid.includes("shutdown") || sid.includes("_aus") || sid.includes("off") || sid.includes("stop") || sid.includes("notaus")) {
