@@ -11,26 +11,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/landing.css">
+    <link rel="stylesheet" href="/static/global_nav.css">
 </head>
 
-<body>
+<body class="has-global-nav">
+    <nav class="global-nav">
+        <a href="/" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>Start-Einführung</span>
+        </a>
+        <a href="/fluesse" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>Energieflüsse</span>
+        </a>
+        <a href="/dashboard" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span>Übersicht</span>
+        </a>
+    </nav>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-background"></div>
         <div class="particles" id="particles"></div>
-
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="logo">
-                    <span class="logo-icon">⚡</span>
-                    <span class="logo-text">Energiesystem Lausitz</span>
-                </div>
-                <div class="nav-links">
-                    <a href="/fluesse" class="nav-link">Energieflüsse</a>
-                    <a href="/dashboard" class="nav-link">Dashboard</a>
-                </div>
-            </div>
-        </nav>
 
         <div class="hero-content">
             <div class="hero-badge">

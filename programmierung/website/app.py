@@ -45,6 +45,12 @@ def dashboard():
 def fluesse():
     return render_template("fluesse.html")
 
+@app.route("/systemsteuerung")
+def systemsteuerung():
+    from config import HOST
+    return render_template("systemsteuerung.html", host=HOST)
+
+
 # ============================================================================
 # MAIN
 # ============================================================================

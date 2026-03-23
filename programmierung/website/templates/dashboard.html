@@ -6,14 +6,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Central UI</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/global_nav.css">
 </head>
 
-<body>
-  <div class="dashboard-header">
-    <a href="/" class="back-link">← Zurück zur Startseite</a>
-    <h1 style="margin: 0; font-size: 18px;">Technisches Dashboard</h1>
-  </div>
+<body class="has-global-nav">
+  <!-- Global Navigation -->
+  <nav class="global-nav">
+    <a href="/" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span>Start-Einführung</span>
+    </a>
+    <a href="/fluesse" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span>Energieflüsse</span>
+    </a>
+    <a href="/dashboard" class="nav-item active">
+      <span class="nav-icon">⚙️</span>
+      <span>Übersicht</span>
+    </a>
+  </nav>
 
+  <div class="dashboard-header" style="display: none;"></div>
+  
   <div id="wifi-warning" class="wifi-warning" style="display: none;">
     <span class="wifi-warning-dot"></span>
     <span class="wifi-warning-text">

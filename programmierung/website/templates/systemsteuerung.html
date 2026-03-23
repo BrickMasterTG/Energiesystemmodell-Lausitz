@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energiesystem Lausitz - Systemsteuerung</title>
+    <meta name="description"
+        content="Interaktives Energiesystemmodell für die Region Lausitz - Steuerung und Monitoring">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/landing.css">
+    <link rel="stylesheet" href="/static/global_nav.css">
+    <style>
+        .admin-corner-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            opacity: 0.6;
+        }
+        
+        .admin-corner-btn:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .controls-wrapper {
+            padding-top: 40px;
+            padding-bottom: 100px;
+        }
+        
+        @media (max-width: 600px) {
+            .admin-corner-btn {
+                bottom: 100px;
+                right: 20px;
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body class="has-global-nav">
+    <!-- Global Navigation -->
+    <nav class="global-nav">
+        <a href="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Start</span>
+        </a>
+        <a href="/fluesse" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>Flüsse</span>
+        </a>
+        <a href="/systemsteuerung" class="nav-item active">
+            <span class="nav-icon">🕹️</span>
+            <span>Steuerung</span>
+        </a>
+    </nav>
+
+    <!-- Admin Button in the corner -->
+    <a href="/dashboard" class="admin-corner-btn">
+        <span>⚙️ Dashboard</span>
+    </a>
+
+    <div class="controls-wrapper">
+        <section class="controls" id="controls">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Systemsteuerung</h2>
+                    <p class="section-description">
+                        Direkte Hardware-Kontrolle über alle Module im System
+                    </p>
+                </div>
+
+                <!-- Scenario Controls -->
+                <div class="control-section">
+                    <div class="control-header">
+                        <h3 class="control-title">🎬 Szenarien</h3>
+                        <div class="status-badge" id="scenario-status">Bereit</div>
+                    </div>
+                    <div class="scenarios-container" id="scenarios-container">
+                        <div class="loading-spinner">Lade Szenarien...</div>
+                    </div>
+                </div>
+
+                <!-- System Grid -->
+                <div class="system-grid">
+                    <!-- Coal Power Plant -->
+                    <div class="system-card" id="card-coal">
+                        <div class="card-header">
+                            <div class="card-icon">🏭</div>
+                            <h3 class="card-title">Kohlekraftwerk</h3>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-coal"></div>
+                        <div class="card-sensors" id="sensors-coal"></div>
+                        <div class="relay-list" id="coal-controls">
+                            <div class="loading-spinner">Lade...</div>
+                        </div>
+                    </div>
+
+                    <!-- Gas Power Plant -->
+                    <div class="system-card" id="card-gas">
+                        <div class="card-header">
+                            <div class="card-icon">⛽</div>
+                            <h3 class="card-title">Gaskraftwerk</h3>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-gas"></div>
+                        <div class="card-sensors" id="sensors-gas"></div>
+                        <div class="relay-list" id="gas-controls">
+                            <div class="loading-spinner">Lade...</div>
+                        </div>
+                    </div>
+
+                    <!-- Elektrolyseur -->
+                    <div class="system-card" id="card-electro">
+                        <div class="card-header">
+                            <div class="card-icon">💧</div>
+                            <h3 class="card-title">Elektrolyseur</h3>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-electro"></div>
+                        <div class="card-sensors" id="sensors-electro"></div>
+                        <div class="relay-list" id="electro-controls">
+                            <div class="loading-spinner">Lade...</div>
+                        </div>
+                    </div>
+
+                    <!-- Wärmepumpe -->
+                    <div class="system-card" id="card-lake">
+                        <div class="card-header">
+                            <div class="card-icon">☀️</div>
+                            <h3 class="card-title">Wärmepumpe</h3>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-lake"></div>
+                        <div class="card-sensors" id="sensors-lake"></div>
+                        <div class="relay-list" id="lake-controls">
+                            <div class="loading-spinner">Lade...</div>
+                        </div>
+                    </div>
+
+                    <!-- Wind Power -->
+                    <div class="system-card" id="card-wind">
+                        <div class="card-header">
+                            <div class="card-icon">💨</div>
+                            <h3 class="card-title">Windkraft</h3>
+                        </div>
+                        <div class="card-status">
+                            <span class="status-label">Status:</span>
+                            <span class="status-value highlight" id="wind-status">--</span>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-wind"></div>
+                        <div class="card-sensors" id="sensors-wind"></div>
+                        <div class="control-group-centered">
+                            <div class="button-group">
+                                <button class="btn-control" onclick="setWind(1)">AN</button>
+                                <button class="btn-control" onclick="setWind(0)">AUS</button>
+                            </div>
+                        </div>
+                        <div class="relay-list" id="wind-controls"></div>
+                    </div>
+
+                    <!-- Train System -->
+                    <div class="system-card" id="card-train">
+                        <div class="card-header">
+                            <div class="card-icon">🚂</div>
+                            <h3 class="card-title">Modellbahn</h3>
+                        </div>
+                        <div class="card-status">
+                            <span class="status-label">Geschwindigkeit:</span>
+                            <span class="status-value highlight" id="train-pwm">0</span>
+                        </div>
+                        <div class="card-scenarios" id="scenarios-train"></div>
+                        <div class="card-sensors" id="sensors-train"></div>
+                        <div class="slider-container">
+                            <input type="range" id="train-slider" class="control-slider" min="0" max="255" value="0"
+                                oninput="updateTrainPWM(this.value)">
+                            <button class="btn-control btn-stop" onclick="stopTrain()">Stop</button>
+                        </div>
+                        <div class="relay-list" id="train-controls"></div>
+                    </div>
+                </div>
+
+                <!-- Reserve / Other Controls (Collapsible) -->
+                <div class="control-section collapsed-section">
+                    <div class="control-header" onclick="toggleReserveSection()" style="cursor: pointer; margin-bottom: 0;">
+                        <h3 class="control-title" style="font-size: 1.2rem;">🔌 Sonstige / Reserve</h3>
+                        <span id="reserve-toggle-icon">▼</span>
+                    </div>
+                    <div id="reserve-controls-container" style="display: none; margin-top: 20px;">
+                        <div class="relay-grid" id="reserve-controls">
+                            <!-- Reserve items go here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Part of landing.js is needed for controlling these elements -->
+    <script src="/static/landing.js"></script>
+    <script>
+        // Adjust footer display or any specific scripts if needed
+    </script>
+</body>
+
+</html>

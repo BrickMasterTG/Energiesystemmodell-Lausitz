@@ -5,20 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Energiesystem Lausitz - Energieflüsse</title>
     <link rel="stylesheet" href="/static/fluesse.css">
+    <link rel="stylesheet" href="/static/global_nav.css">
 </head>
 <body>
+    <!-- Global Navigation -->
+    <nav class="global-nav">
+        <a href="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Start-Einführung</span>
+        </a>
+        <a href="/fluesse" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span>Energieflüsse</span>
+        </a>
+        <a href="/dashboard" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span>Übersicht</span>
+        </a>
+    </nav>
+
     <div id="system">
         <svg id="grid"></svg>
-        <a href="/" class="back-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            Zurück
-        </a>
-        <div class="title-bar">
-            <h1>Energiesystem Lausitz</h1>
-            <p>Energiefluss-Diagramm</p>
+        <div class="old-nav-hidden" style="display: none;">
+            <a href="/" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Zurück
+            </a>
+            <div class="title-bar">
+                <h1>Energiesystem Lausitz</h1>
+                <p>Energiefluss-Diagramm</p>
+            </div>
         </div>
+
         <div class="legend" id="system-legend">
             <div class="legend-item active" id="legend-item-1"><div class="legend-line green" id="legend-line-1"></div><span id="legend-text-1">Stromerzeugung</span></div>
             <div class="legend-item active" id="legend-item-2"><div class="legend-line yellow" id="legend-line-2"></div><span id="legend-text-2">Verteilung</span></div>

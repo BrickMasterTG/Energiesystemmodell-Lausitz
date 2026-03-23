@@ -1,0 +1,122 @@
+/* Global Navigation Styles */
+
+.global-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.global-nav:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateX(-50%) translateY(-2px);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 40px;
+    text-decoration: none;
+    color: #2d5a2d;
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.nav-item:hover {
+    background: rgba(34, 139, 34, 0.1);
+    color: #228b22;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(34, 139, 34, 0.3);
+}
+
+.nav-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Hide original navigation elements */
+.navbar, 
+.dashboard-header .back-link, 
+.back-btn,
+.title-bar,
+.dashboard-header h1 {
+    display: none !important;
+}
+
+/* Page specific adjustments */
+.has-global-nav {
+    padding-top: 90px !important;
+}
+
+/* For fluesse page which is 100vh absolute, we don't want padding */
+.no-padding {
+    padding-top: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .global-nav {
+        top: auto;
+        bottom: 25px;
+        width: calc(100% - 40px);
+        justify-content: space-around;
+        padding: 5px;
+    }
+    
+    .nav-item {
+        padding: 8px 14px;
+        font-size: 11px;
+        gap: 6px;
+    }
+    
+    .nav-icon {
+        font-size: 16px;
+    }
+    
+    /* Avoid overlap on fluesse page mobile */
+    .legend, .system-switch {
+        bottom: 100px !important;
+    }
+    
+    .legend {
+        left: 20px !important;
+        flex-direction: column;
+        gap: 8px !important;
+        padding: 10px !important;
+    }
+    
+    .system-switch {
+        right: 20px !important;
+        gap: 8px !important;
+        padding: 6px !important;
+    }
+    
+    .system-btn {
+        padding: 8px 12px !important;
+    }
+}
+
+
