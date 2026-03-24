@@ -13,17 +13,17 @@
 #define PIN_1 22
 #define PIN_2 21
 #define PIN_3 19
-#define PIN_4 18
+#define PIN_4 18 //other use
 #define PIN_5 5
-#define PIN_6 4
+#define PIN_6 4 //not used
 
 #define LEDS_0 68 //done
 #define LEDS_1 58 //done
 #define LEDS_2 22 //done
 #define LEDS_3 120 //done
-#define LEDS_4 120 //done
+#define LEDS_4 120 //other use
 #define LEDS_5 134 //done
-#define LEDS_6 134 //done
+#define LEDS_6 134 //not used
 
 #define BRIGHTNESS 60
 

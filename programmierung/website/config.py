@@ -128,21 +128,14 @@ def load_scenarios():
 # ============================================================================
 # Maps flow identifiers to (strip, start, end, color_rgb)
 LED_MAPPING = {
-    "coal": [
-        {"strip": 0, "range": (0, 40),  "color": (100, 100, 100)},#later
-    ],
-    "wind":    {"strip": 2, "range": (0, 22),  "color": (0, 255, 0)}, #done
-    "solar":     {"strip": 1, "range": (0, 58),  "color": (150, 150, 150)}, #done
-    "gas":      {"strip": 5, "range": (0, 40),  "color": (255, 100, 0)}, #later
-    "village":  {"strip": 6, "range": (0, 40),  "color": (0, 0, 255)}, #later
-    "gridToExternal": [
-        {"strip": 5, "range": (0, 134), "color": (0, 255, 255)}, #done
-        {"strip": 6, "range": (0, 134), "color": (0, 255, 255)},
-    ],
-    "heatpump": [
-        {"strip": 3, "range": (0, 120),  "color": (255, 0, 0)}, #done
-        {"strip": 4, "range": (0, 120),  "color": (255, 0, 0)}, #done
-    ],
+    "coal":     [{"strip": 6, "range": (0, 134),  "color": (100, 100, 100)}], #length
+    "wind":     {"strip": 2, "range": (0, 22),  "color": (0, 255, 0)}, #done
+    "solar":    {"strip": 1, "range": (0, 58),  "color": (150, 150, 150)}, #done
+    #"gas":      {"strip": 0, "range": (0, 40),  "color": (255, 100, 0)}, #later
+
+    "village":  {"strip": 4, "range": (0, 40),  "color": (0, 0, 255)}, #length
+    "gridToExternal": [{"strip": 5, "range": (0, 134), "color": (0, 255, 255)}], #done
+    "heatpump": [{"strip": 3, "range": (0, 120),  "color": (255, 0, 0)},], #done
     "elektro":  {"strip": 0, "range": (0, 68), "color": (0, 255, 255)}, #done
 }
 
