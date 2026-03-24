@@ -250,8 +250,11 @@ async function syncLeds() {
     const groups = getEdgeGroups();
     const flows = {};
     for (const id in groups) {
-      // Send the entire flows array [true, false, ...] for multi-stripe support
-      flows[id] = groups[id].flows;
+      let flowId = id;
+      if (id === "village") {
+          flowId = (activeSystem === "heat") ? "village_heat" : "village_power";
+      }
+      flows[flowId] = groups[id].flows;
     }
 
     const stateStr = JSON.stringify(flows);

@@ -23,7 +23,7 @@ const nodeDetails = {
       off: { label: "Aus", icon: "🏘️" },
       on: { label: "Aktiv", icon: "🏘️⚡" },
     },
-    currentState: "on",
+    currentState: "off",
   },
   solar: {
     subtitle: "Photovoltaik",
@@ -33,7 +33,7 @@ const nodeDetails = {
       off: { label: "Aus", icon: "☀️" },
       on: { label: "Aktiv", icon: "☀️⚡" },
     },
-    currentState: "on",
+    currentState: "off",
   },
   wind: {
     subtitle: "Windkraft",
@@ -43,7 +43,7 @@ const nodeDetails = {
       off: { label: "Aus", icon: "🌬️" },
       on: { label: "Aktiv", icon: "🌬️⚡" },
     },
-    currentState: "on",
+    currentState: "off",
   },
   gridNode: {
     subtitle: "Verteilung",
@@ -53,7 +53,7 @@ const nodeDetails = {
       off: { label: "Aus", icon: "⚡" },
       on: { label: "Aktiv", icon: "⚡🔋" },
     },
-    currentState: "on",
+    currentState: "off",
   },
   external: {
     subtitle: "Übertragung",

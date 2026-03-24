@@ -9,23 +9,25 @@
 // KONFIGURATION
 // ==========================
 
-#define PIN_0 23
-#define PIN_1 22
-#define PIN_2 21
-#define PIN_3 19
-#define PIN_4 18 //other use
-#define PIN_5 5
-#define PIN_6 4 //not used
+#define PIN_0 23 //Elektro
+#define PIN_1 22 //solar-dorf
+#define PIN_2 21 //wind
+#define PIN_3 19 //wärmepumpe
+#define PIN_4 18 //kreis
+#define PIN_5 5 //außen
+#define PIN_6 4 //kohle
+#define PIN_7 16 //gas
 
-#define LEDS_0 68 //done
-#define LEDS_1 58 //done
-#define LEDS_2 22 //done
-#define LEDS_3 120 //done
-#define LEDS_4 120 //other use
+#define LEDS_0 216 //done
+#define LEDS_1 174
+#define LEDS_2 30 //done
+#define LEDS_3 133 //done
+#define LEDS_4 280
 #define LEDS_5 134 //done
-#define LEDS_6 134 //not used
+#define LEDS_6 250
+#define LEDS_7 156 //done
 
-#define BRIGHTNESS 60
+#define BRIGHTNESS 30
 
 CRGB leds0[LEDS_0];
 CRGB leds1[LEDS_1];
@@ -34,15 +36,16 @@ CRGB leds3[LEDS_3];
 CRGB leds4[LEDS_4];
 CRGB leds5[LEDS_5];
 CRGB leds6[LEDS_6];
+CRGB leds7[LEDS_7];
 
 struct StripPtr {
   CRGB *leds;
   int count;
 };
 
-StripPtr strips[7] = {{leds0, LEDS_0}, {leds1, LEDS_1}, {leds2, LEDS_2},
+StripPtr strips[8] = {{leds0, LEDS_0}, {leds1, LEDS_1}, {leds2, LEDS_2},
                       {leds3, LEDS_3}, {leds4, LEDS_4}, {leds5, LEDS_5},
-                      {leds6, LEDS_6}};
+                      {leds6, LEDS_6}, {leds7, LEDS_7}};
 
 // ==========================
 // STATE
@@ -56,7 +59,7 @@ struct Segment {
 };
 
 // Max 4 segments per strip for now
-Segment segments[7][4];
+Segment segments[8][4];
 
 float phasePower = 0;
 
@@ -109,7 +112,7 @@ void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
   memcpy(&msg, data, sizeof(msg));
 
   if (strcmp(msg.cmd, "CLR") == 0) {
-    for (int s=0; s<7; s++) {
+    for (int s=0; s<8; s++) {
       for (int seg=0; seg<4; seg++) {
         segments[s][seg].active = false;
       }
@@ -124,7 +127,7 @@ void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
     int s=0, start=0, end=0, val=0, r=0, g=0, b=0;
     sscanf(msg.payload, "%d|%d|%d|%d|%d|%d|%d", &s, &start, &end, &val, &r, &g, &b);
     
-    if (s >= 0 && s < 7) {
+    if (s >= 0 && s < 8) {
       // Find empty slot or matching range
       int slot = -1;
       for (int i=0; i<4; i++) {
@@ -159,7 +162,7 @@ void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
 // ==========================
 
 void updateStrips() {
-  for (int s = 0; s < 7; s++) {
+  for (int s = 0; s < 8; s++) {
     fadeToBlackBy(strips[s].leds, strips[s].count, 40);
 
     for (int seg = 0; seg < 4; seg++) {
@@ -223,10 +226,11 @@ void setup() {
   FastLED.addLeds<WS2812B, PIN_4, GRB>(leds4, LEDS_4);
   FastLED.addLeds<WS2812B, PIN_5, GRB>(leds5, LEDS_5);
   FastLED.addLeds<WS2812B, PIN_6, GRB>(leds6, LEDS_6);
+  FastLED.addLeds<WS2812B, PIN_7, GRB>(leds7, LEDS_7);
   FastLED.setBrightness(BRIGHTNESS);
 
   // Clear segments
-  for (int s = 0; s < 7; s++) {
+  for (int s = 0; s < 8; s++) {
     for (int seg = 0; seg < 4; seg++) {
       segments[s][seg].active = false;
     }
