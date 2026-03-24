@@ -127,21 +127,39 @@ def load_scenarios():
 # LED MAPPING (ESP5)
 # ============================================================================
 # Maps flow identifiers to (strip, start, end, color_rgb)
+color_export_power = (245, 195, 29)
+color_import_power = (0, 255, 0)
+heat_import_power = (255, 0, 0)
+heat_export_power = (0, 0, 255)
+
 LED_MAPPING = {
     
-    "elektro":  {"strip": 0, "range": (0, 216), "color": (0, 255, 255)}, #done
-    "solar":    {"strip": 1, "range": (0, 120),  "color": (150, 150, 150)},
-    "village_power": [{"strip": 1, "range": (150, 174),  "color": (0, 0, 255)},
-                      {"strip": 4, "range": (0, 180),  "color": (255, 0, 0)}]
-    ,
-    "village_heat":  [{"strip": 0, "range": (150, 174),  "color": (255, 0, 0)}],
-    "wind":     {"strip": 2, "range": (0, 30),  "color": (0, 255, 0)}, #done
-    "heatpump": [{"strip": 3, "range": (0, 133),  "color": (255, 0, 0)},], #done
-    "heatBus":  [{"strip": 4, "range": (0, 180),  "color": (255, 0, 0)},
-                 {"strip": 0, "range": (0, 60),  "color": (255, 0, 0)}],
-    "gridToExternal": [{"strip": 5, "range": (0, 134), "color": (0, 255, 255)}], #done
-    "coal":     [{"strip": 6, "range": (0, 200),  "color": (100, 100, 100)}],
-    "gas":      {"strip": 7, "range": (0, 156),  "color": (255, 100, 0)}, #done
+    "elektro_consume":  [{"strip": 0, "range": (179, 0), "color": color_export_power}], 
+    "elektro_fuelcell": [{"strip": 0, "range": (0, 97), "color": color_import_power},
+                         {"strip": 0, "range": (216, 180), "color": color_import_power}], 
+    "solar":    {"strip": 1, "range": (0, 120),  "color": color_import_power},
+    "village_power": [{"strip": 1, "range": (112, 174),  "color": color_export_power}, #done
+                      {"strip": 4, "range": (0, 200),  "color": color_export_power}], #done
+    "village_heat":  [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
+                      {"strip": 1, "range": (174, 112),  "color": heat_export_power}],
+    "wind":     {"strip": 2, "range": (0, 30),  "color": color_import_power}, #done
+    "heatpump_power": {"strip": 3, "range": (133, 0),  "color": color_export_power}, # Electricity: Only red
+    "heatpump_heat":  [{"strip": 3, "range": (0, 133),  "color": heat_import_power},
+                       {"strip": 3, "range": (133, 0),  "color": heat_export_power}], # Heat: Dual
+    "heatBus":  [{"strip": 4, "range": (0, 366),  "color": heat_import_power},
+                 {"strip": 4, "range": (366, 0),  "color": heat_export_power}, # opposing blue
+                 {"strip": 0, "range": (102, 0),  "color": heat_import_power},
+                 {"strip": 0, "range": (0, 102),  "color": heat_export_power}], # opposing blue
+    "gridToExternal_import": {"strip": 5, "range": (0, 134), "color": color_import_power},
+    "gridToExternal_export": {"strip": 5, "range": (134, 0), "color": color_export_power},
+    "gridToExternal_heat":   [{"strip": 5, "range": (0, 134), "color": heat_import_power},
+                              {"strip": 5, "range": (134, 0), "color": heat_export_power}],
+    "coal":     [{"strip": 6, "range": (0, 300),  "color": (255, 0, 0)},
+                 {"strip": 6, "range": (300, 0),  "color": (0, 0, 255)}],
+    "gas_power": {"strip": 7, "range": (0, 156),  "color": color_import_power}, #done
+    "gas_heat":  [{"strip": 7, "range": (0, 156),  "color": heat_import_power},
+                  {"strip": 7, "range": (156, 0),  "color": heat_export_power}],
+    "houses":   {"strip": 4, "range": (200, 250), "color": (255, 255, 255)},
 }
 
 SCENARIOS = load_scenarios()

@@ -22,6 +22,7 @@ const nodeDetails = {
     states: {
       off: { label: "Aus", icon: "🏘️" },
       on: { label: "Aktiv", icon: "🏘️⚡" },
+      on_houses: { label: "Häuser", icon: "🏘️💡" },
     },
     currentState: "off",
   },
@@ -259,8 +260,8 @@ const heatEdgeGroups = {
   gas: {
     colors: ["blue", "red"],
     edges: powerEdgeGroups.gas.edges,
-    flows: [false],
-    revs: [false],
+    flows: [false, false],
+    revs: [false, false],
   },
   village: {
     colors: ["red", "blue"],

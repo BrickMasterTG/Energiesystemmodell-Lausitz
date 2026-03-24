@@ -250,11 +250,60 @@ async function syncLeds() {
     const groups = getEdgeGroups();
     const flows = {};
     for (const id in groups) {
+      const group = groups[id];
       let flowId = id;
+      
       if (id === "village") {
           flowId = (activeSystem === "heat") ? "village_heat" : "village_power";
+      } else if (id === "heatpump") {
+          flowId = (activeSystem === "heat") ? "heatpump_heat" : "heatpump_power";
+      } else if (id === "gas") {
+          flowId = (activeSystem === "heat") ? "gas_heat" : "gas_power";
+      } else if (id === "gridToExternal") {
+          if (activeSystem === "heat") {
+              flowId = "gridToExternal_heat";
+          } else {
+              // Direction-aware power mapping
+              flowId = group.revs[0] ? "gridToExternal_export" : "gridToExternal_import";
+          }
+      } else if (id === "elektro") {
+          const state = nodeDetails.elektro?.currentState;
+          flowId = (state === "on_fuelcell") ? "elektro_fuelcell" : "elektro_consume";
       }
-      flows[flowId] = groups[id].flows;
+      
+      flows[flowId] = group.flows;
+    }
+    
+    // Explicitly disable 'other' hardware modes for split components
+    // to prevent ghosting when switching systems/modes.
+    if (activeSystem === "power") {
+        flows["village_heat"] = [false];
+        flows["heatpump_heat"] = [false];
+        flows["gridToExternal_heat"] = [false];
+        flows["gas_heat"] = [false, false];
+    } else {
+        flows["village_power"] = [false];
+        flows["heatpump_power"] = [false];
+        flows["gridToExternal_import"] = [false];
+        flows["gridToExternal_export"] = [false];
+        flows["gas_power"] = [false];
+    }
+    
+    // Elektrolyzer mutual exclusivity
+    const eState = nodeDetails.elektro?.currentState;
+    if (eState === "on_fuelcell") {
+        flows["elektro_consume"] = [false];
+    } else if (eState === "on") {
+        // Clear BOTH segments of fuelcell mapping
+        flows["elektro_fuelcell"] = [false, false];
+    } else {
+        flows["elektro_consume"] = [false];
+        flows["elektro_fuelcell"] = [false, false];
+    }
+    
+    // Physical house lighting (independent of flow views)
+    if (typeof nodeDetails !== 'undefined' && nodeDetails.village) {
+        flows["houses"] = (nodeDetails.village.currentState === "on_houses");
     }
 
     const stateStr = JSON.stringify(flows);

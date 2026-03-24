@@ -61,7 +61,7 @@ function updateEdgeGroupStates() {
         }
 
         // Village group
-        const villageActive = nodeDetails.village && nodeDetails.village.currentState === "on";
+        const villageActive = nodeDetails.village && (nodeDetails.village.currentState === "on" || nodeDetails.village.currentState === "on_houses");
         groups.village.flows = [villageActive];
         groups.village.revs = [true]; // Consumer direction
 
@@ -92,7 +92,7 @@ function updateEdgeGroupStates() {
     } else {
         // HEAT SYSTEM LOGIC
         const coalHeat = nodeProducesEnergy("coal");
-        const villageHeat = nodeDetails.village && nodeDetails.village.currentState === "on";
+        const villageHeat = nodeDetails.village && (nodeDetails.village.currentState === "on" || nodeDetails.village.currentState === "on_houses");
         const heatpumpHeat = nodeProducesEnergy("heatpump");
 
         // Coal -> Loop (Red: flow out, Blue: return in)
@@ -103,10 +103,17 @@ function updateEdgeGroupStates() {
         groups.village.flows = [villageHeat, villageHeat];
         groups.village.revs = [true, false];
 
-        // Heatpump connection (if configured in heat view)
+        // Heatpump connection
         if (groups.heatpump) {
-            groups.heatpump.flows = [heatpumpHeat];
-            groups.heatpump.revs = [false];
+            groups.heatpump.flows = [heatpumpHeat, heatpumpHeat];
+            groups.heatpump.revs = [false, true];
+        }
+
+        // Gas connection
+        if (groups.gas) {
+            const gasHeat = nodeProducesEnergy("gas");
+            groups.gas.flows = [gasHeat, gasHeat];
+            groups.gas.revs = [false, true];
         }
 
         // Grid to external connection
