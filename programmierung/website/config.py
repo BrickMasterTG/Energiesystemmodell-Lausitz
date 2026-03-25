@@ -132,12 +132,11 @@ color_import_power = (0, 255, 0)
 heat_import_power = (255, 0, 0)
 heat_export_power = (0, 0, 255)
 
-LED_MAPPING = {
-    
+LED_MAPPING = {   
     "elektro_consume":  [{"strip": 0, "range": (179, 0), "color": color_export_power}], 
     "elektro_fuelcell": [{"strip": 0, "range": (0, 97), "color": color_import_power},
                          {"strip": 0, "range": (216, 180), "color": color_import_power}], 
-    "solar":    {"strip": 1, "range": (0, 120),  "color": color_import_power},
+    "solar":    {"strip": 1, "range": (0, 112),  "color": color_import_power},
     "village_power": [{"strip": 1, "range": (112, 174),  "color": color_export_power}, #done
                       {"strip": 4, "range": (0, 200),  "color": color_export_power}], #done
     "village_heat":  [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
