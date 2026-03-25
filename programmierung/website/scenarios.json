@@ -241,6 +241,33 @@
             }
         ]
     },
+    "elektrolyseur_tank_halten": {
+        "name": "Gas im Tank halten",
+        "description": "Alle Ventile und Elektrolyseur aus (Gas bleibt im Tank)",
+        "target_card": "electro",
+        "actions": [
+            {
+                "type": "relay",
+                "name": "Elekrolyseur",
+                "val": 0
+            },
+            {
+                "type": "relay",
+                "name": "Tank füllen",
+                "val": 0
+            },
+            {
+                "type": "relay",
+                "name": "Tank leeren",
+                "val": 0
+            },
+            {
+                "type": "relay",
+                "name": "Durchschalten",
+                "val": 0
+            }
+        ]
+    },
     "tank_in_brennstoffzelle": {
         "name": "Tank in Brennstoffzelle",
         "description": "Tank in Brennstoffzelle",
