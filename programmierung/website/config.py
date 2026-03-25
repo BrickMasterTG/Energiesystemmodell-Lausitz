@@ -149,8 +149,8 @@ LED_MAPPING = {
                  {"strip": 4, "range": (366, 0),  "color": heat_export_power}, # opposing blue
                  {"strip": 0, "range": (102, 0),  "color": heat_import_power},
                  {"strip": 0, "range": (0, 102),  "color": heat_export_power}], # opposing blue
-    "gridToExternal_import": {"strip": 5, "range": (134, 0), "color": color_import_power},
-    "gridToExternal_export": {"strip": 5, "range": (0, 134), "color": color_export_power},
+    "gridToExternal_import": {"strip": 5, "range": (0, 134), "color": color_import_power},
+    "gridToExternal_export": {"strip": 5, "range": (134, 0), "color": color_export_power},
     "gridToExternal_heat":   [{"strip": 5, "range": (0, 134), "color": heat_import_power},
                               {"strip": 5, "range": (134, 0), "color": heat_export_power}],
     "coal":     [{"strip": 6, "range": (0, 300),  "color": (255, 0, 0)},

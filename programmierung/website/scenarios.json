@@ -343,7 +343,7 @@
             { "type": "relay", "global_idx": 7, "val": 1 },
             { "type": "delay", "ms": 1000 },
             { "type": "relay", "global_idx": 5, "val": 1 },
-            { "type": "delay", "ms": 1000 },
+            { "type": "delay", "ms": 4000 },
             { "type": "relay", "global_idx": 4, "val": 1 },
             { "type": "delay", "ms": 2000 },
             { "type": "relay", "global_idx": 4, "val": 0 }
