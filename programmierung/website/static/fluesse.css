@@ -556,3 +556,100 @@ svg { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
 .modal-visual-icon.error-glow {
     filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.6));
 }
+
+/* ============================================
+   MODAL TABS & TAB CONTENT
+   ============================================ */
+.modal-tabs {
+    display: flex;
+    border-bottom: 2px solid rgba(34, 139, 34, 0.15);
+    background: rgba(34, 139, 34, 0.03);
+    padding: 0 16px;
+}
+
+.modal-tab {
+    padding: 14px 20px;
+    border: none;
+    background: transparent;
+    color: #4a7c4a;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.modal-tab:hover {
+    color: #1a4d1a;
+    background: rgba(34, 139, 34, 0.05);
+}
+
+.modal-tab.active {
+    color: #1a4d1a;
+}
+
+.modal-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #228b22;
+    border-radius: 3px 3px 0 0;
+}
+
+.modal-tab-content {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.modal-tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tab 2: Individual controls list */
+.relay-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.relay-item {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(34,139,34,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.relay-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d5a2d;
+}
+
+/* Toggle Switch (copied from global/landing) */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1; transition: .3s; border-radius: 24px;
+}
+.toggle-slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: white; transition: .3s; border-radius: 50%;
+}
+input:checked + .toggle-slider { background-color: #228b22; }
+input:checked + .toggle-slider:before { transform: translateX(20px); }
+input:disabled + .toggle-slider { opacity: 0.6; cursor: not-allowed; }

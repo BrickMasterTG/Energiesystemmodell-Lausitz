@@ -79,26 +79,40 @@
                     <button class="modal-close" id="modal-close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="modal-visual">
+                    <div class="modal-visual" style="position: relative;">
+                        <button id="expert-mode-btn" onclick="toggleExpertMode()" style="position: absolute; bottom: 15px; left: 15px; background: transparent; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s;" title="Experten-Modus">⚙️</button>
+                        
                         <div class="modal-visual-icon" id="modal-visual-icon">🏭</div>
                         <div class="modal-visual-label" id="modal-visual-label">Kohlekraftwerk</div>
                     </div>
                     <div class="modal-content">
-                        <div class="modal-state">
-                            <div class="state-indicator">
-                                <div class="state-dot" id="state-dot"></div>
-                                <span class="state-label" id="state-label">Aus</span>
+
+                        <!-- Tab 1: Info & Scenarios -->
+                        <div class="modal-tab-content active" id="modal-tab-info" style="padding-top: 20px;">
+                            <div class="modal-state">
+                                <div class="state-indicator">
+                                    <div class="state-dot" id="state-dot"></div>
+                                    <span class="state-label" id="state-label">Aus</span>
+                                </div>
+                                <div class="state-buttons" id="state-buttons">
+                                    <!-- State buttons will be inserted here -->
+                                </div>
                             </div>
-                            <div class="state-buttons" id="state-buttons">
-                                <!-- State buttons will be inserted here -->
+                            <div class="modal-description" id="modal-description">
+                                Beschreibung wird geladen...
+                            </div>
+                            <div class="modal-section-title">Szenarien</div>
+                            <div class="scenario-buttons" id="scenario-buttons">
+                                <!-- Scenario buttons will be inserted here -->
                             </div>
                         </div>
-                        <div class="modal-description" id="modal-description">
-                            Beschreibung wird geladen...
-                        </div>
-                        <div class="modal-section-title">Szenarien</div>
-                        <div class="scenario-buttons" id="scenario-buttons">
-                            <!-- Scenario buttons will be inserted here -->
+
+                        <!-- Tab 2: Individual Controls -->
+                        <div class="modal-tab-content" id="modal-tab-controls" style="padding-top: 20px;">
+                            <div class="modal-section-title" style="color: #666;">🔧 Tech-Service Override</div>
+                            <div class="relay-list" id="modal-controls-list">
+                                <div class="loading-spinner">Wähle eine Komponente...</div>
+                            </div>
                         </div>
                     </div>
                 </div>

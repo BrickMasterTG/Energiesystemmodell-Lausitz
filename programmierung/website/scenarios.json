@@ -110,48 +110,7 @@
             }
         ]
     },
-    "kohlekraftwerk_startup": {
-        "name": "Kohlekraftwerk Start",
-        "description": "Fährt das Kohlekraftwerk hoch",
-        "target_card": "coal",
-        "actions": [
-            {
-                "type": "relay",
-                "global_idx": 9,
-                "val": 1
-            },
-            {
-                "type": "delay",
-                "ms": 1500
-            },
-            {
-                "type": "relay",
-                "global_idx": 10,
-                "val": 1
-            }
-        ]
-    },
-    "kohlekraftwerk_shutdown": {
-        "name": "Kohlekraftwerk Stop",
-        "description": "Sicherer Stopp",
-        "target_card": "coal",
-        "actions": [
-            {
-                "type": "relay",
-                "global_idx": 10,
-                "val": 0
-            },
-            {
-                "type": "delay",
-                "ms": 1000
-            },
-            {
-                "type": "relay",
-                "global_idx": 9,
-                "val": 0
-            }
-        ]
-    },
+    
     "test_sequenz": {
         "name": "Test-Sequenz",
         "description": "Alle Test-Relays checken",
@@ -357,6 +316,22 @@
             { "type": "relay", "global_idx": 7, "val": 0 },
             { "type": "delay", "ms": 1000 },
             { "type": "relay", "global_idx": 5, "val": 0 }
+        ]
+    },
+    "kohlekraftwerk_startup": {
+        "name": "Kohlekraftwerk Start",
+        "description": "Fährt das Kohlekraftwerk hoch",
+        "target_card": "coal",
+        "actions": [
+            { "type": "relay", "global_idx": 12, "val": 1 }
+        ]
+    },
+    "kohlekraftwerk_shutdown": {
+        "name": "Kohlekraftwerk Stop",
+        "description": "Fährt das Kohlekraftwerk herunter",
+        "target_card": "coal",
+        "actions": [
+            { "type": "relay", "global_idx": 12, "val": 0 }
         ]
     },
     "wind_an": {

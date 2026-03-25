@@ -24,6 +24,10 @@ function openModal(nodeId) {
 
   currentNodeId = nodeId;
   updateModalState(nodeId);
+  isExpertMode = false;
+  const btn = document.getElementById('expert-mode-btn');
+  if (btn) btn.style.opacity = '0.5';
+  switchModalTab('info'); // Reset to info tab on open
 
   // Show modal
   modalOverlay.classList.add("active");
@@ -158,4 +162,140 @@ function closeModal() {
 if (modalClose) modalClose.addEventListener("click", closeModal);
 if (modalOverlay) modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+/* ============================================
+   MODAL TABS & INDIVIDUAL CONTROLS
+   ============================================ */
+let isExpertMode = false;
+
+function toggleExpertMode() {
+    isExpertMode = !isExpertMode;
+    const btn = document.getElementById('expert-mode-btn');
+    if (btn) btn.style.opacity = isExpertMode ? '1' : '0.5';
+    switchModalTab(isExpertMode ? 'controls' : 'info');
+}
+
+function switchModalTab(tabId) {
+    document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+    
+    const targetTab = document.getElementById('modal-tab-' + tabId);
+    if (targetTab) targetTab.classList.add('active');
+
+    if (tabId === 'controls' && currentNodeId) {
+        loadModalControls(currentNodeId);
+    }
+}
+
+const nodeDeviceMap = {
+    'gas': { device: 'esp1', offset: 1 },
+    'coal': { device: 'esp2', offset: 9 },
+    'elektro': { device: 'esp4', offset: 13 },
+    'heatpump': { device: 'esp3', offset: 18 }
+};
+
+async function loadModalControls(nodeId) {
+    const list = document.getElementById('modal-controls-list');
+    list.innerHTML = '<div class="loading-spinner">Lade Komponenten...</div>';
+
+    if (nodeId === 'wind') {
+        list.innerHTML = '';
+        list.appendChild(createToggleItem('Windkraftanlage', false, async (val, input) => {
+            try {
+                input.disabled = true;
+                await fetch('/api/esp3/set_wind', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ val: val ? 1 : 0 })
+                });
+                if (window.showNotification) window.showNotification(`Wind ${val ? 'an' : 'aus'}`, 'success');
+            } catch (e) {
+                input.checked = !input.checked;
+            } finally {
+                input.disabled = false;
+            }
+        }));
+        return;
+    }
+
+    const mapping = nodeDeviceMap[nodeId] || null;
+    if (!mapping) {
+        list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; opacity: 0.5;">Keine direkten Relais-Steuerungen für diese Ansicht.</div>';
+        return;
+    }
+
+    try {
+        const [metaRes, stateRes] = await Promise.all([
+            fetch(`/api/device_meta/${mapping.device}`),
+            fetch(`/api/device_state/${mapping.device}`)
+        ]);
+
+        if (!metaRes.ok || !stateRes.ok) throw new Error("API Error");
+
+        const metaJson = await metaRes.json();
+        const stateJson = await stateRes.json();
+
+        const meta = metaJson.body || metaJson;
+        const state = stateJson.body || stateJson;
+        
+        list.innerHTML = '';
+        
+        for (let i = 0; i < meta.count; i++) {
+            const globalIdx = mapping.offset + i;
+            const name = meta.names[i] || `Relay ${i}`;
+            
+            let val = 0;
+            if (state[`r${i}`] !== undefined) val = state[`r${i}`];
+            else if (state.relays && state.relays[i] !== undefined) val = state.relays[i];
+
+            list.appendChild(createToggleItem(name, val === 1, async (isChecked, input) => {
+                input.disabled = true;
+                try {
+                    await fetch('/api/relay/set', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ global_idx: globalIdx, val: isChecked ? 1 : 0 })
+                    });
+                    if (window.showNotification) window.showNotification(`${name} geschaltet`, 'success');
+                } catch (e) {
+                    input.checked = !isChecked;
+                } finally {
+                    input.disabled = false;
+                }
+            }));
+        }
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = '<div style="color:red; text-align:center;">Fehler beim Laden.</div>';
+    }
+}
+
+function createToggleItem(name, isChecked, onChangeCallback) {
+    const item = document.createElement('div');
+    item.className = 'relay-item';
+
+    const info = document.createElement('div');
+    info.className = 'relay-name';
+    info.textContent = name;
+
+    const toggle = document.createElement('label');
+    toggle.className = 'toggle-switch';
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = isChecked;
+    
+    input.addEventListener('change', () => {
+        onChangeCallback(input.checked, input);
+    });
+
+    const slider = document.createElement('span');
+    slider.className = 'toggle-slider';
+
+    toggle.appendChild(input);
+    toggle.appendChild(slider);
+
+    item.appendChild(info);
+    item.appendChild(toggle);
+    return item;
+}
 
