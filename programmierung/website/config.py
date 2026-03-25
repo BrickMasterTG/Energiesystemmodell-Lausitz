@@ -55,10 +55,10 @@ RELAY_CONFIG = {
     16: {"device": "esp4", "idx": 3, "name": "Durchschalten"},
     17: {"device": "esp4", "idx": 4, "name": "Lüfter"},
 
-    18: {"device": "esp3", "idx": 0, "name": "Relais 2"},
-    19: {"device": "esp3", "idx": 1, "name": "Relais 3"},
-    20: {"device": "esp3", "idx": 2, "name": "Relais 4"},
-    21: {"device": "esp3", "idx": 3, "name": "Relais 5"},
+    18: {"device": "esp3", "idx": 0, "name": "Pumpe 1"},
+    19: {"device": "esp3", "idx": 1, "name": "Pumpe 2"},
+    20: {"device": "esp3", "idx": 2, "name": "Ventil 1"},
+    21: {"device": "esp3", "idx": 3, "name": "Ventil 2"},
 }
 
 # Flat mapping: global relay index -> (device, device_idx)
