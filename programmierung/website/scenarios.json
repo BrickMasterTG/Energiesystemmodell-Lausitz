@@ -379,5 +379,23 @@
         "actions": [
             { "type": "wind", "val": 0 }
         ]
+    },
+    "heatpump_aus": {
+        "name": "Wärmemumpe aus",
+        "description": "Wärmemumpe ausschalten",
+        "target_card": "lake",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 0 },
+            { "type": "relay", "global_idx": 19, "val": 0 }
+        ]
+    },
+    "heatpump_an": {
+        "name": "Wärmemumpe an",
+        "description": "Wärmemumpe einschalten",
+        "target_card": "lake",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 1 },
+            { "type": "relay", "global_idx": 19, "val": 1 }
+        ]
     }
 }
