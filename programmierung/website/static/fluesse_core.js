@@ -277,11 +277,11 @@ async function syncLeds() {
     // Elektrolyzer mutual exclusivity (cleared before active assignment too)
     const eState = nodeDetails.elektro?.currentState;
     if (eState === "on_fuelcell") {
-        flows["elektro_consume"]  = [false];
+        flows["elektro_consume"]  = [false, false];
     } else if (eState === "on") {
         flows["elektro_fuelcell"] = [false, false];
     } else {
-        flows["elektro_consume"]  = [false];
+        flows["elektro_consume"]  = [false, false];
         flows["elektro_fuelcell"] = [false, false];
     }
 
@@ -310,7 +310,13 @@ async function syncLeds() {
           flowId = (state === "on_fuelcell") ? "elektro_fuelcell" : "elektro_consume";
       }
       
-      flows[flowId] = group.flows;
+      // elektro_consume uses two physical ranges; keep the 2nd one off
+      if (flowId === "elektro_consume") {
+          const active = Array.isArray(group.flows) ? !!group.flows[0] : !!group.flows;
+          flows[flowId] = [active, false];
+      } else {
+          flows[flowId] = group.flows;
+      }
     }
 
     // Physical house lighting (independent of flow views)

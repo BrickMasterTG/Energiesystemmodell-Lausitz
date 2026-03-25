@@ -144,6 +144,12 @@ async function runScenario(scenarioKey) {
        const sid = scenarioKey.toLowerCase();
        if (sid === "tank_in_brennstoffzelle") {
            nodeDetails[currentNodeId].currentState = "on_fuelcell";
+       } else if (sid === "elektrolyseur_in_tank" || sid === "elektrolyseur_in_brennstoffzelle" || sid === "elektrolyseur_an") {
+           // Elektrolyseur läuft (Verbrauch/Produktion-Modus im Diagramm)
+           nodeDetails[currentNodeId].currentState = "on";
+       } else if (sid === "elektrolyseur_tank_halten") {
+           // Halten: im Flüsse-UI alles aus
+           nodeDetails[currentNodeId].currentState = "off";
        } else if (sid.includes("import")) {
            nodeDetails[currentNodeId].currentState = "on_import";
        } else if (sid.includes("export")) {
