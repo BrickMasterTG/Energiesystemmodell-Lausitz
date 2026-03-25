@@ -335,6 +335,30 @@
             { "type": "relay", "global_idx": 18, "val": 0 }
         ]
     },
+    "gas_an": {
+        "name": "Gas an",
+        "description": "Gaskraftwerk einschalten",
+        "target_card": "gas",
+        "actions": [
+            { "type": "relay", "global_idx": 7, "val": 1 },
+            { "type": "delay", "ms": 1000 },
+            { "type": "relay", "global_idx": 5, "val": 1 },
+            { "type": "delay", "ms": 1000 },
+            { "type": "relay", "global_idx": 4, "val": 1 },
+            { "type": "delay", "ms": 2000 },
+            { "type": "relay", "global_idx": 4, "val": 0 }
+        ]
+    },
+    "gas_aus": {
+        "name": "Gas aus",
+        "description": "Gaskraftwerk ausschalten",
+        "target_card": "gas",
+        "actions": [
+            { "type": "relay", "global_idx": 7, "val": 0 },
+            { "type": "delay", "ms": 1000 },
+            { "type": "relay", "global_idx": 5, "val": 0 }
+        ]
+    },
     "wind_an": {
         "name": "Windrad an",
         "description": "Windkraftanlage einschalten",

@@ -137,8 +137,8 @@ LED_MAPPING = {
     "elektro_fuelcell": [{"strip": 0, "range": (0, 97), "color": color_import_power},
                          {"strip": 0, "range": (216, 180), "color": color_import_power}], 
     "solar":    {"strip": 1, "range": (0, 112),  "color": color_import_power},
-    "village_power": [{"strip": 1, "range": (112, 174),  "color": color_export_power}, #done
-                      {"strip": 4, "range": (0, 200),  "color": color_export_power}], #done
+    "village_power": [{"strip": 1, "range": (174, 112),  "color": color_export_power}, #done
+                      {"strip": 4, "range": (200, 0),  "color": color_export_power}], #done
     "village_heat":  [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
                       {"strip": 1, "range": (174, 112),  "color": heat_import_power}],
     "wind":     {"strip": 2, "range": (0, 30),  "color": color_import_power}, #done
