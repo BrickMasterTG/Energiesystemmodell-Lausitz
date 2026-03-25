@@ -334,5 +334,21 @@
         "actions": [
             { "type": "relay", "global_idx": 18, "val": 0 }
         ]
+    },
+    "wind_an": {
+        "name": "Windrad an",
+        "description": "Windkraftanlage einschalten",
+        "target_card": "wind",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 1 }
+        ]
+    },
+    "wind_aus": {
+        "name": "Windrad aus",
+        "description": "Windkraftanlage ausschalten",
+        "target_card": "wind",
+        "actions": [
+            { "type": "relay", "global_idx": 18, "val": 0 }
+        ]
     }
 }

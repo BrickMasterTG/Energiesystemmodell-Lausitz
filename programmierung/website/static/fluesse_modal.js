@@ -71,7 +71,7 @@ function updateModalState(nodeId) {
   const cardScenarios = Object.entries(allScenarios).filter(([key, sc]) => sc.target_card === targetCard);
   
   // Also include "notaus" for specific nodes if relevant
-  if (["gridNode", "coal", "gas", "elektro"].includes(nodeId)) {
+  if (["gridNode", "coal", "gas", "elektro", "wind"].includes(nodeId)) {
      if (allScenarios["notaus"]) cardScenarios.push(["notaus", allScenarios["notaus"]]);
   }
 

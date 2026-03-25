@@ -131,5 +131,11 @@ function updateEdgeGroupStates() {
             const gridActive = nodeDetails.gridNode && nodeDetails.gridNode.currentState === "on";
             groups.heatBus.flows = [gridActive, gridActive];
         }
+
+        // Wind has no heat role — always off
+        if (groups.wind) {
+            groups.wind.flows = [false];
+            groups.wind.revs = [false];
+        }
     }
 }

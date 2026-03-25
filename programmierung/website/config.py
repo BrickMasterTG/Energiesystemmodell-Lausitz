@@ -140,7 +140,7 @@ LED_MAPPING = {
     "village_power": [{"strip": 1, "range": (112, 174),  "color": color_export_power}, #done
                       {"strip": 4, "range": (0, 200),  "color": color_export_power}], #done
     "village_heat":  [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
-                      {"strip": 1, "range": (174, 112),  "color": heat_export_power}],
+                      {"strip": 1, "range": (174, 112),  "color": heat_import_power}],
     "wind":     {"strip": 2, "range": (0, 30),  "color": color_import_power}, #done
     "heatpump_power": {"strip": 3, "range": (133, 0),  "color": color_export_power}, # Electricity: Only red
     "heatpump_heat":  [{"strip": 3, "range": (0, 133),  "color": heat_import_power},
@@ -149,8 +149,8 @@ LED_MAPPING = {
                  {"strip": 4, "range": (366, 0),  "color": heat_export_power}, # opposing blue
                  {"strip": 0, "range": (102, 0),  "color": heat_import_power},
                  {"strip": 0, "range": (0, 102),  "color": heat_export_power}], # opposing blue
-    "gridToExternal_import": {"strip": 5, "range": (0, 134), "color": color_import_power},
-    "gridToExternal_export": {"strip": 5, "range": (134, 0), "color": color_export_power},
+    "gridToExternal_import": {"strip": 5, "range": (134, 0), "color": color_import_power},
+    "gridToExternal_export": {"strip": 5, "range": (0, 134), "color": color_export_power},
     "gridToExternal_heat":   [{"strip": 5, "range": (0, 134), "color": heat_import_power},
                               {"strip": 5, "range": (134, 0), "color": heat_export_power}],
     "coal":     [{"strip": 6, "range": (0, 300),  "color": (255, 0, 0)},

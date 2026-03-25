@@ -259,12 +259,17 @@ async function syncLeds() {
         flows["heatpump_heat"]         = [false, false];
         flows["gridToExternal_heat"]   = [false, false];
         flows["gas_heat"]              = [false, false];
+        // Pre-clear both directions; the active one will overwrite below
+        flows["gridToExternal_import"] = [false];
+        flows["gridToExternal_export"] = [false];
     } else {
         flows["village_power"]         = [false, false];
         flows["heatpump_power"]        = [false];
         flows["gridToExternal_import"] = [false];
         flows["gridToExternal_export"] = [false];
         flows["gas_power"]             = [false];
+        // Wind has no heat role — always clear the strip in heat mode
+        flows["wind"]                  = [false];
     }
 
     // Elektrolyzer mutual exclusivity (cleared before active assignment too)
@@ -293,7 +298,8 @@ async function syncLeds() {
           if (activeSystem === "heat") {
               flowId = "gridToExternal_heat";
           } else {
-              flowId = group.revs[0] ? "gridToExternal_export" : "gridToExternal_import";
+              // revs[0]=true means animation flows from external→gridNode = import
+              flowId = group.revs[0] ? "gridToExternal_import" : "gridToExternal_export";
           }
       } else if (id === "elektro") {
           const state = nodeDetails.elektro?.currentState;
@@ -329,6 +335,32 @@ async function syncLeds() {
 function setActiveSystem(system) {
   if (system !== 'power' && system !== 'heat') return;
   activeSystem = system;
+
+  // --- Reset all node states to off when switching modes ---
+  if (typeof nodeDetails !== 'undefined') {
+    for (const id in nodeDetails) {
+      nodeDetails[id].currentState = 'off';
+    }
+  }
+  // Reset all edge group flows for both systems
+  for (const gid in powerEdgeGroups) {
+    powerEdgeGroups[gid].flows = powerEdgeGroups[gid].flows.map(() => false);
+    powerEdgeGroups[gid].revs  = powerEdgeGroups[gid].revs.map(() => false);
+  }
+  for (const gid in heatEdgeGroups) {
+    heatEdgeGroups[gid].flows = heatEdgeGroups[gid].flows.map(() => false);
+    heatEdgeGroups[gid].revs  = heatEdgeGroups[gid].revs.map(() => false);
+  }
+  // Force the LED sync cache to flush on the next draw cycle
+  lastFlowState = '';
+  lastSyncTime  = 0;
+
+  // Clear physical LEDs immediately
+  fetch('/api/leds/test', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'off' })
+  }).catch(e => console.error('LED clear on mode switch failed:', e));
 
   // Update button active states
   const btnPower = document.getElementById('btn-power');
