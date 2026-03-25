@@ -65,7 +65,12 @@ function updateModalState(nodeId) {
 
   // Filter real scenarios for this component
   const scenarioContainer = document.getElementById("scenario-buttons");
+  const expertScenarioContainer = document.getElementById("expert-scenario-buttons");
+  const expertScenariosTitle = document.getElementById("expert-scenarios-title");
+  
   scenarioContainer.innerHTML = "";
+  if (expertScenarioContainer) expertScenarioContainer.innerHTML = "";
+  if (expertScenariosTitle) expertScenariosTitle.style.display = "none";
 
   // Mapping from fluesse nodeId to scenarios target_card
   const mapping = { 'elektro': 'electro', 'heatpump': 'lake' };
@@ -79,16 +84,30 @@ function updateModalState(nodeId) {
      if (allScenarios["notaus"]) cardScenarios.push(["notaus", allScenarios["notaus"]]);
   }
 
-  if (cardScenarios.length > 0) {
-    cardScenarios.forEach(([key, scenario]) => {
-      const btn = document.createElement("button");
-      btn.className = "scenario-btn";
-      const desc = scenario.description || "Systemaktion ausführen";
-      btn.innerHTML = `<span class="scenario-name">${scenario.name}</span><span class="scenario-desc">${desc}</span>`;
-      btn.onclick = () => runScenario(key);
-      scenarioContainer.appendChild(btn);
-    });
-  } else {
+  let hasNormalScenarios = false;
+  let hasExpertScenarios = false;
+
+  cardScenarios.forEach(([key, scenario]) => {
+    const btn = document.createElement("button");
+    btn.className = "scenario-btn";
+    const desc = scenario.description || "Systemaktion ausführen";
+    btn.innerHTML = `<span class="scenario-name">${scenario.name}</span><span class="scenario-desc">${desc}</span>`;
+    btn.onclick = () => runScenario(key);
+    
+    if (scenario.expert && expertScenarioContainer) {
+        expertScenarioContainer.appendChild(btn);
+        hasExpertScenarios = true;
+    } else {
+        scenarioContainer.appendChild(btn);
+        hasNormalScenarios = true;
+    }
+  });
+  
+  if (hasExpertScenarios && expertScenariosTitle) {
+      expertScenariosTitle.style.display = "block";
+  }
+
+  if (!hasNormalScenarios) {
     scenarioContainer.innerHTML = '<p style="color: rgba(255,255,255,0.4); text-align: center; font-size: 0.9rem;">Keine spezifischen Szenarien für diese Komponente.</p>';
   }
 

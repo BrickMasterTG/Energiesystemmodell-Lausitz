@@ -153,8 +153,9 @@ LED_MAPPING = {
     "gridToExternal_export": {"strip": 5, "range": (134, 0), "color": color_export_power},
     "gridToExternal_heat":   [{"strip": 5, "range": (0, 134), "color": heat_import_power},
                               {"strip": 5, "range": (134, 0), "color": heat_export_power}],
-    "coal":     [{"strip": 6, "range": (0, 300),  "color": (255, 0, 0)},
-                 {"strip": 6, "range": (300, 0),  "color": (0, 0, 255)}],
+    "coal_power": {"strip": 6, "range": (0, 200),  "color": color_import_power},
+    "coal_heat":  [{"strip": 6, "range": (0, 200),  "color": heat_import_power},
+                   {"strip": 6, "range": (200, 0),  "color": heat_export_power}],
     "gas_power": {"strip": 7, "range": (0, 156),  "color": color_import_power}, #done
     "gas_heat":  [{"strip": 7, "range": (0, 156),  "color": heat_import_power},
                   {"strip": 7, "range": (156, 0),  "color": heat_export_power}],

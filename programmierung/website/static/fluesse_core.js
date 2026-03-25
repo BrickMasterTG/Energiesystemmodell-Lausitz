@@ -259,6 +259,7 @@ async function syncLeds() {
         flows["heatpump_heat"]         = [false, false];
         flows["gridToExternal_heat"]   = [false, false];
         flows["gas_heat"]              = [false, false];
+        flows["coal_heat"]             = [false, false];
         // Pre-clear both directions; the active one will overwrite below
         flows["gridToExternal_import"] = [false];
         flows["gridToExternal_export"] = [false];
@@ -268,6 +269,7 @@ async function syncLeds() {
         flows["gridToExternal_import"] = [false];
         flows["gridToExternal_export"] = [false];
         flows["gas_power"]             = [false];
+        flows["coal_power"]            = [false];
         // Wind has no heat role — always clear the strip in heat mode
         flows["wind"]                  = [false];
     }
@@ -294,6 +296,8 @@ async function syncLeds() {
           flowId = (activeSystem === "heat") ? "heatpump_heat" : "heatpump_power";
       } else if (id === "gas") {
           flowId = (activeSystem === "heat") ? "gas_heat" : "gas_power";
+      } else if (id === "coal") {
+          flowId = (activeSystem === "heat") ? "coal_heat" : "coal_power";
       } else if (id === "gridToExternal") {
           if (activeSystem === "heat") {
               flowId = "gridToExternal_heat";

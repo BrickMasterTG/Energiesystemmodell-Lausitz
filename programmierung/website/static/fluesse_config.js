@@ -8,10 +8,12 @@ const nodeDetails = {
   coal: {
     subtitle: "Kraftwerk",
     description:
-      "Das Kohlekraftwerk ist eine traditionelle Energieerzeugungsanlage, die Kohle zur Stromproduktion verwendet. Es verfügt über mehrere Relais zur Steuerung der Verbrennungsprozesse, Kühlung und Turbine.",
+      "Das Kohlekraftwerk ist eine traditionelle Energieerzeugungsanlage, die Kohle zur Strom- und Wärmeproduktion verwendet (KWK).",
     states: {
       off: { label: "Aus", icon: "🏭" },
-      on: { label: "Aktiv", icon: "🏭🔥" },
+      on_power: { label: "Strom", icon: "🏭⚡" },
+      on_heat: { label: "Wärme", icon: "🏭🔥" },
+      on: { label: "Beides", icon: "🏭⚡🔥" },
     },
     currentState: "off",
   },

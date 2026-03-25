@@ -135,6 +135,7 @@
         "name": "Elektrolyseur an",
         "description": "Elektrolyseur an",
         "target_card": "electro",
+        "expert": true,
         "actions": [
             {
                 "type": "relay",
@@ -152,6 +153,7 @@
         "name": "Elektrolyseur aus",
         "description": "Elektrolyseur aus",
         "target_card": "electro",
+        "expert": true,
         "actions": [
             {
                 "type": "relay",
@@ -188,6 +190,7 @@
         "name": "Elektrolyseur in Brennstoffzelle",
         "description": "Elektrolyseur in Brennstoffzelle",
         "target_card": "electro",
+        "expert": true,
         "actions": [
             {
                 "type": "relay",

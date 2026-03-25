@@ -34,9 +34,10 @@ function updateEdgeGroupStates() {
     const system = typeof getActiveSystem === 'function' ? getActiveSystem() : 'power';
 
     if (system === 'power') {
-        // Coal group - single grey stripe, flows when coal is active
-        const coalActive = nodeProducesEnergy("coal");
-        groups.coal.flows = [coalActive];
+        // Coal group
+        const cStateP = nodeDetails.coal?.currentState || "off";
+        const coalPowerActive = (cStateP === "on" || cStateP === "on_power");
+        groups.coal.flows = [coalPowerActive];
         groups.coal.revs = [false];
 
         // Solar group - single stripe matching config.py
@@ -91,7 +92,8 @@ function updateEdgeGroupStates() {
         }
     } else {
         // HEAT SYSTEM LOGIC
-        const coalHeat = nodeProducesEnergy("coal");
+        const cStateH = nodeDetails.coal?.currentState || "off";
+        const coalHeat = (cStateH === "on" || cStateH === "on_heat");
         const villageHeat = nodeDetails.village && (nodeDetails.village.currentState === "on" || nodeDetails.village.currentState === "on_houses");
         const heatpumpHeat = nodeProducesEnergy("heatpump");
 
