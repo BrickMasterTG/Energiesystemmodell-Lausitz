@@ -53,7 +53,7 @@ def api_leds_sync():
 def api_leds_test():
     """Hardware reset or test mode."""
     data = request.get_json(force=True)
-    mode = data.get("mode", "off") # "green" or "off"
+    mode = data.get("mode", "off") # "green", "off", or "custom"
     
     if mode == "off":
         # New Master-Reset via the dedicated /clear endpoint on ESP-Host -> ESP5
@@ -63,10 +63,16 @@ def api_leds_test():
         except Exception as e:
             return jsonify({"success": False, "error": str(e)}), 502
 
-    # Mode "green" or other test modes still use the loop to sweep mapped zones
-    val = 1 if mode == "green" else 0
-    color = (0, 255, 0) if mode == "green" else (0, 0, 0)
-    r_v, g_v, b_v = color
+    # Default colors
+    r_v, g_v, b_v = (0, 0, 0)
+    val = 1 if mode != "off" else 0
+
+    if mode == "green":
+        r_v, g_v, b_v = (0, 255, 0)
+    elif "r" in data and "g" in data and "b" in data:
+        r_v = int(data["r"])
+        g_v = int(data["g"])
+        b_v = int(data["b"])
 
     for flow_id, configs in LED_MAPPING.items():
         cfg_list = configs if isinstance(configs, list) else [configs]
@@ -79,4 +85,4 @@ def api_leds_test():
             except:
                 continue
 
-    return jsonify({"success": True, "mode": mode})
+    return jsonify({"success": True, "mode": mode, "color": [r_v, g_v, b_v]})

@@ -136,15 +136,15 @@ LED_MAPPING = {
     "elektro_consume":  {"strip": 0, "range": (179, 0), "color": color_export_power}, 
     "elektro_fuelcell": [{"strip": 0, "range": (0, 97), "color": color_import_power},
                          {"strip": 0, "range": (216, 180), "color": color_import_power}], 
-    "solar":    {"strip": 1, "range": (0, 112),  "color": color_import_power},
-    "village_power": [{"strip": 1, "range": (174, 112),  "color": color_export_power}, #done
-                      {"strip": 4, "range": (200, 0),  "color": color_export_power}], #done
-    "village_heat":  [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
-                      {"strip": 1, "range": (174, 112),  "color": heat_import_power}],
-    "wind":     {"strip": 2, "range": (0, 30),  "color": color_import_power}, #done
-    "heatpump_power": {"strip": 3, "range": (133, 0),  "color": color_export_power}, # Electricity: Only red
-    "heatpump_heat":  [{"strip": 3, "range": (0, 133),  "color": heat_import_power},
-                       {"strip": 3, "range": (133, 0),  "color": heat_export_power}], # Heat: Dual
+    "solar":            {"strip": 1, "range": (0, 112),  "color": color_import_power},
+    "village_power":    [{"strip": 1, "range": (174, 112),  "color": color_export_power}, #done
+                         {"strip": 4, "range": (200, 0),  "color": color_export_power}], #done
+    "village_heat":     [{"strip": 1, "range": (112, 174),  "color": heat_import_power},
+                         {"strip": 1, "range": (174, 112),  "color": heat_import_power}],
+    "wind":             {"strip": 2, "range": (0, 30),  "color": color_import_power}, #done
+    "heatpump_power":   {"strip": 3, "range": (133, 0),  "color": color_export_power}, # Electricity: Only red
+    "heatpump_heat":    [{"strip": 3, "range": (0, 133),  "color": heat_import_power},
+                         {"strip": 3, "range": (133, 0),  "color": heat_export_power}], # Heat: Dual
     "heatBus":  [{"strip": 4, "range": (0, 366),  "color": heat_import_power},
                  {"strip": 4, "range": (366, 0),  "color": heat_export_power}, # opposing blue
                  {"strip": 0, "range": (102, 0),  "color": heat_import_power},

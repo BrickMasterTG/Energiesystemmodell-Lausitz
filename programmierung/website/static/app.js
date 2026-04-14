@@ -660,17 +660,33 @@
     }
   }
 
-  async function testLeds(mode) {
+  async function testLeds(mode, color = null) {
     try {
+      const body = { mode };
+      if (color) {
+        body.r = color.r;
+        body.g = color.g;
+        body.b = color.b;
+      }
       await fetch('/api/leds/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode })
+        body: JSON.stringify(body)
       });
     } catch (e) {
       console.error('LED test failure:', e);
       alert('LED Test fehlgeschlagen: ' + e);
     }
+  }
+
+  function testLedsFromPicker() {
+    const picker = $('ledPicker');
+    if (!picker) return;
+    const hex = picker.value;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    testLeds('custom', { r, g, b });
   }
 
   // ============================================================================
@@ -806,6 +822,7 @@
   window.updateRsCommand = updateRsCommand;
   window.sendRs = sendRs;
   window.testLeds = testLeds;
+  window.testLedsFromPicker = testLedsFromPicker;
   window.cleanup = cleanup;
 
   // Start
