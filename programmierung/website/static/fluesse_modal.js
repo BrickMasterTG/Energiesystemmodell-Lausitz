@@ -215,7 +215,7 @@ const nodeDeviceMap = {
     'gas': { device: 'esp1', offset: 1 },
     'coal': { device: 'esp2', offset: 9 },
     'elektro': { device: 'esp4', offset: 13 },
-    'heatpump': { device: 'esp3', offset: 18 }
+    'heatpump': { device: 'esp3', offset: 19 }
 };
 
 async function loadModalControls(nodeId) {
@@ -264,8 +264,9 @@ async function loadModalControls(nodeId) {
         
         list.innerHTML = '';
         
+        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-            const globalIdx = mapping.offset + i;
+            const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (mapping.offset + i);
             const name = meta.names[i] || `Relay ${i}`;
             
             let val = 0;

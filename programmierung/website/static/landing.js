@@ -487,6 +487,7 @@
       2: 'electro-controls',
       3: 'electro-controls',
       4: 'electro-controls',
+      5: 'electro-controls',
     },
     esp3: {
       0: 'lake-controls',
@@ -618,8 +619,9 @@
       const state = stateData.body || stateData;
 
       if (meta && meta.names) {
+        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = 18 + i;
+          const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (19 + i);
           const name = meta.names[i] || `Relay ${i}`;
           const val = state.relays && state.relays[i] ? state.relays[i] : 0;
 
@@ -655,8 +657,9 @@
       const state = stateData.body || stateData;
 
       if (meta && meta.names) {
+        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = 13 + i;
+          const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (13 + i);
           const name = meta.names[i] || `Relay ${i}`;
           const val = state.relays && state.relays[i] ? state.relays[i] : 0;
 

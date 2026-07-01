@@ -18,22 +18,23 @@ _meta_cache_time = {}
 def api_sensors_meta():
     """Returns the central sensor configuration for frontend dynamic rendering."""
     return jsonify(SENSOR_CONFIG)
-
-
 @relays_bp.route("/api/device_meta/<device>")
 def api_device_meta(device):
     if VERBOSE: print(f"\n[INFO] === Request: /api/device_meta/{device} ===")
 
     # Build fallback meta from RELAY_CONFIG
-    fallback_meta = {"count": 0, "names": []}
+    fallback_meta = {"count": 0, "names": [], "global_indices": []}
     device_relays = [(k, v) for k, v in RELAY_CONFIG.items() if v["device"] == device]
     if device_relays:
         max_idx = max([v["idx"] for k, v in device_relays])
         fallback_meta["count"] = max_idx + 1
         names = ["Unbelegt"] * (max_idx + 1)
+        global_indices = [-1] * (max_idx + 1)
         for k, v in device_relays:
             names[v["idx"]] = v["name"]
+            global_indices[v["idx"]] = k
         fallback_meta["names"] = names
+        fallback_meta["global_indices"] = global_indices
 
     try:
         now = time.time()
@@ -64,7 +65,7 @@ def api_device_state(device):
         fallback_state = {"running": False, "pwm": 0, "relays": [0, 0, 0, 0]}
     elif device == "esp4":
         fallback_state = {
-            "relays": [0,0,0,0,0],
+            "relays": [0,0,0,0,0,0],
             "sensors": [
                 {"current":0,"pressure":0},
                 {"current":0,"pressure":0},

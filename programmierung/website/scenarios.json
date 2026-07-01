@@ -107,6 +107,11 @@
                 "type": "relay",
                 "global_idx": 21,
                 "val": 0
+            },
+            {
+                "type": "relay",
+                "global_idx": 22,
+                "val": 0
             }
         ]
     },
@@ -305,7 +310,7 @@
         "description": "Strom aus dem Netz beziehen",
         "target_card": "external",
         "actions": [
-            { "type": "relay", "global_idx": 18, "val": 1 }
+            { "type": "relay", "global_idx": 19, "val": 1 }
         ]
     },
     "netz_export": {
@@ -313,7 +318,7 @@
         "description": "Strom in das Netz einspeisen",
         "target_card": "external",
         "actions": [
-            { "type": "relay", "global_idx": 18, "val": 1 }
+            { "type": "relay", "global_idx": 19, "val": 1 }
         ]
     },
     "netz_aus": {
@@ -321,7 +326,7 @@
         "description": "Vom Netz trennen",
         "target_card": "external",
         "actions": [
-            { "type": "relay", "global_idx": 18, "val": 0 }
+            { "type": "relay", "global_idx": 19, "val": 0 }
         ]
     },
     "gas_an": {
@@ -385,8 +390,8 @@
         "description": "Wärmemumpe ausschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "global_idx": 18, "val": 0 },
-            { "type": "relay", "global_idx": 19, "val": 0 }
+            { "type": "relay", "global_idx": 19, "val": 0 },
+            { "type": "relay", "global_idx": 20, "val": 0 }
         ]
     },
     "heatpump_an": {
@@ -394,8 +399,8 @@
         "description": "Wärmemumpe einschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "global_idx": 18, "val": 1 },
-            { "type": "relay", "global_idx": 19, "val": 1 }
+            { "type": "relay", "global_idx": 19, "val": 1 },
+            { "type": "relay", "global_idx": 20, "val": 1 }
         ]
     }
 }

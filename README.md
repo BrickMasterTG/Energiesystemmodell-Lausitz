@@ -107,7 +107,7 @@ ESP-NOW allows direct peer-to-peer communication between ESP32 devices without r
 | ESP1     | Gas plant controller     | 8      | NTC temperature, RS232 (MFC)  |
 | ESP2     | Coal plant controller    | 4      | NTC temperature               |
 | ESP3     | Wind / Train controller  | 4      | DC motor (L298N), wind pin    |
-| ESP4     | Electrolyzer controller  | 5      | 5× 4–20 mA sensors, flow meter |
+| ESP4     | Electrolyzer controller  | 6      | 5× 4–20 mA sensors, flow meter |
 | ESP5     | LED Strip controller     | —      | 7× WS2812B strips for flows    |
 
 ### Relays
@@ -115,7 +115,7 @@ ESP-NOW allows direct peer-to-peer communication between ESP32 devices without r
 - **ESP1:** Ventil-1, Ventil-2, Heizstab, Zünder, Gasventil, Kühler, MFC, (Unbelegt)
 - **ESP2:** Kühler-Kohle, Ventil Turbine, Ventil-Kohle, Heizstab-Kohle
 - **ESP3:** Relais 2–5 (general purpose)
-- **ESP4:** Elektrolyseur (High-Trigger), Tank füllen, Tank leeren, Durchschalten, Lüfter
+- **ESP4:** Elektrolyseur (High-Trigger), Tank füllen, Tank leeren, Durchschalten, Lüfter, Elekrolyseur-Pumpe
 
 ### Sensors & Actuators
 
@@ -273,8 +273,8 @@ Example scenario definition:
 |-------------|--------|--------------|--------------------|
 | 1–8         | ESP1   | 0–7          | Ventil-1 … Unbelegt |
 | 9–12        | ESP2   | 0–3          | Kühler-Kohle … Heizstab-Kohle |
-| 13–17       | ESP4   | 0–4          | Elektrolyseur … Lüfter |
-| 18–21       | ESP3   | 0–3          | Relais 2–5         |
+| 13–18       | ESP4   | 0–5          | Elektrolyseur … Elekrolyseur-Pumpe |
+| 19–22       | ESP3   | 0–3          | Relais 2–5         |
 
 ---
 

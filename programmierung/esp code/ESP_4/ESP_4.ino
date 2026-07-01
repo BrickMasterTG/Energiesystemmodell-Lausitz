@@ -14,13 +14,14 @@
 // RELAY KONFIGURATION
 // ============================================================================
 struct RelayConfig { uint8_t pin; const char* name; bool activeLow; };
-const uint8_t RELAY_COUNT = 5;
+const uint8_t RELAY_COUNT = 6;
 RelayConfig RELAYS[RELAY_COUNT] = {
-  {18, "Elektrolyseur", false}, // High-Trigger
+  {18, "Elektrolyseur", true}, // High-Trigger
   {19, "Außen Relay",   true},
   {21, "Mitte Relay",   true},
   {22, "Innen Relay",   true},
   {23, "Lüfter",        true},
+  {5, "Elektrolyseur-Pumpe", true},
 };
 
 inline int logicalToPhys(int v, bool al) { return al ? (v ? LOW : HIGH) : (v ? HIGH : LOW); }

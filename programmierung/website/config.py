@@ -54,11 +54,12 @@ RELAY_CONFIG = {
     15: {"device": "esp4", "idx": 2, "name": "Tank leeren"},
     16: {"device": "esp4", "idx": 3, "name": "Durchschalten"},
     17: {"device": "esp4", "idx": 4, "name": "Lüfter"},
+    18: {"device": "esp4", "idx": 5, "name": "Elekrolyseur-Pumpe"},
 
-    18: {"device": "esp3", "idx": 0, "name": "Pumpe 1"},
-    19: {"device": "esp3", "idx": 1, "name": "Pumpe 2"},
-    20: {"device": "esp3", "idx": 2, "name": "Ventil 1"},
-    21: {"device": "esp3", "idx": 3, "name": "Ventil 2"},
+    19: {"device": "esp3", "idx": 0, "name": "Pumpe 1"},
+    20: {"device": "esp3", "idx": 1, "name": "Pumpe 2"},
+    21: {"device": "esp3", "idx": 2, "name": "Ventil 1"},
+    22: {"device": "esp3", "idx": 3, "name": "Ventil 2"},
 }
 
 # Flat mapping: global relay index -> (device, device_idx)
@@ -133,10 +134,10 @@ heat_import_power = (255, 0, 0)
 heat_export_power = (0, 0, 255)
 
 LED_MAPPING = {   
-    "elektro_consume":  {"strip": 0, "range": (179, 0), "color": color_export_power}, 
+    "elektro_consume":  [{"strip": 0, "range": (179, 0), "color": color_export_power}], 
     "elektro_fuelcell": [{"strip": 0, "range": (0, 97), "color": color_import_power},
                          {"strip": 0, "range": (216, 180), "color": color_import_power}], 
-    "solar":            {"strip": 1, "range": (0, 112),  "color": color_import_power},
+    "solar":            [{"strip": 1, "range": (0, 112),  "color": color_import_power}],
     "village_power":    [{"strip": 1, "range": (174, 112),  "color": color_export_power}, #done
                          {"strip": 4, "range": (200, 0),  "color": color_export_power}], #done
     "village_heat":     [{"strip": 1, "range": (112, 174),  "color": heat_import_power},

@@ -342,14 +342,15 @@
     if (device === 'esp1') startIdx = 1;
     else if (device === 'esp2') startIdx = 9;
     else if (device === 'esp4') startIdx = 13;
-    else startIdx = 18;
+    else startIdx = 19;
 
     const count = meta.count || meta.relayCount || 0;
     const names = meta.names || [];
+    const globalIndices = meta.global_indices || [];
 
     for (let i = 0; i < count; i++) {
       const name = names[i] || ('Relay ' + (i + 1));
-      const globalIdx = startIdx + i;
+      const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (startIdx + i);
 
       let st = 0;
       if (device === 'esp4' || device === 'esp3') {
@@ -405,7 +406,7 @@
         let device;
         if (globalIdx <= 8) device = 'esp1';
         else if (globalIdx <= 12) device = 'esp2';
-        else if (globalIdx <= 17) device = 'esp4';
+        else if (globalIdx <= 18) device = 'esp4';
         else device = 'esp3';
         await refreshDeviceState(device);
       }, 100);
@@ -433,11 +434,12 @@
     if (device === 'esp1') startIdx = 1;
     else if (device === 'esp2') startIdx = 9;
     else if (device === 'esp4') startIdx = 13;
-    else startIdx = 18;
+    else startIdx = 19;
 
     const count = meta.count || meta.relayCount || 0;
+    const globalIndices = meta.global_indices || [];
     for (let i = 0; i < count; i++) {
-      const globalIdx = startIdx + i;
+      const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (startIdx + i);
       const checkbox = $('g' + globalIdx);
       if (checkbox) {
         const newState = (device === 'esp4' || device === 'esp3')
