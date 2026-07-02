@@ -19,8 +19,11 @@ const int   PUMP_PWM_CHANNEL  = 0;
 const int   PUMP_PWM_FREQ     = 20000;  // 20 kHz for quiet operation
 const int   PUMP_PWM_RES_BITS = 8;
 const int   PUMP_PWM_MAX      = (1 << PUMP_PWM_RES_BITS) - 1;
-// 12 V supply, target ~2.5 V effective → duty ≈ 2.5/12
 const int   PUMP_PWM_ON_DUTY  = (int)(PUMP_PWM_MAX * (2.5f / 12.0f) + 0.5f);
+
+// NEU: Richtungspins für L298N (IN1/IN2) — Pins noch anpassen, sobald bekannt!
+const int   PUMP_IN1 = -1;   // TODO: GPIO eintragen
+const int   PUMP_IN2 = -1;   // TODO: GPIO eintragen
 const uint8_t RELAY_COUNT = 8;
 RelayConfig RELAYS[RELAY_COUNT] = {
   {18, "Elektrolyseur", true}, // High-Trigger
@@ -196,6 +199,15 @@ void setup() {
     ledcAttachPin(RELAYS[PUMP_PWM_IDX].pin, PUMP_PWM_CHANNEL);
     ledcWrite(PUMP_PWM_CHANNEL, 0);
   }
+
+  // NEU: Richtungspins für die Pumpe (L298N IN1/IN2)
+  if (PUMP_IN1 >= 0 && PUMP_IN2 >= 0) {
+    pinMode(PUMP_IN1, OUTPUT);
+    pinMode(PUMP_IN2, OUTPUT);
+    digitalWrite(PUMP_IN1, HIGH);  // feste Richtung, Pumpe läuft nur vorwärts
+    digitalWrite(PUMP_IN2, LOW);
+  }
+
   applySafeDefaults();
 
   // ESP-NOW
