@@ -63,7 +63,7 @@ def api_device_state(device):
         fallback_state = {"running": False, "pwm": 0, "relays": [0, 0, 0, 0]}
     elif device == "esp4":
         fallback_state = {
-            "relays": [0,0,0,0,0,0,0],
+            "relays": [0,0,0,0,0,0,0,0],
             "sensors": [
                 {"current":0,"pressure":0},
                 {"current":0,"pressure":0},

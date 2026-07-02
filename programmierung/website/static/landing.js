@@ -488,7 +488,8 @@
       3: 'electro-controls',
       4: 'electro-controls',
       5: 'electro-controls',
-      6: 'electro-controls',
+      6: 'wind-controls',
+      7: 'wind-controls',
     },
     esp3: {
       0: 'lake-controls',

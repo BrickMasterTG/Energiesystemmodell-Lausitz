@@ -57,8 +57,9 @@ RELAY_CONFIG = {
         2: {"name": "Tank leeren"},
         3: {"name": "Durchschalten"},
         4: {"name": "Lüfter"},
-        5: {"name": "Windrad-LED"},
-        6: {"name": "Windrad-Motor"},
+        5: {"name": "Elektrolyseur-Pumpe"},
+        6: {"name": "Windrad-LED"},
+        7: {"name": "Windrad-Motor"},
     },
     "esp3": {
         0: {"name": "Pumpe 1"},

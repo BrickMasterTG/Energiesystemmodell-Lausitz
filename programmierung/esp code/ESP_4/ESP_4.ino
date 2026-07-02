@@ -13,8 +13,15 @@
 // ============================================================================
 // RELAY KONFIGURATION
 // ============================================================================
-struct RelayConfig { uint8_t pin; const char* name; bool activeLow; };
-const uint8_t RELAY_COUNT = 6;
+struct RelayConfig { int8_t pin; const char* name; bool activeLow; };
+const int   PUMP_PWM_IDX      = 5;      // uses RELAYS[5] ("Elektrolyseur-Pumpe")
+const int   PUMP_PWM_CHANNEL  = 0;
+const int   PUMP_PWM_FREQ     = 20000;  // 20 kHz for quiet operation
+const int   PUMP_PWM_RES_BITS = 8;
+const int   PUMP_PWM_MAX      = (1 << PUMP_PWM_RES_BITS) - 1;
+// 12 V supply, target ~2.5 V effective → duty ≈ 2.5/12
+const int   PUMP_PWM_ON_DUTY  = (int)(PUMP_PWM_MAX * (2.5f / 12.0f) + 0.5f);
+const uint8_t RELAY_COUNT = 8;
 RelayConfig RELAYS[RELAY_COUNT] = {
   {18, "Elektrolyseur", true}, // High-Trigger
   {19, "Außen Relay",   true},
@@ -22,14 +29,26 @@ RelayConfig RELAYS[RELAY_COUNT] = {
   {22, "Innen Relay",   true},
   {23, "Lüfter",        true},
   {5, "Elektrolyseur-Pumpe", true},
+  {-1, "Windrad-LED",   true}, // Placeholder: no physical pin wired yet
+  {-1, "Windrad-Motor", true}, // Placeholder: no physical pin wired yet
 };
+int relayShadow[RELAY_COUNT] = {0}; // Stores logical states, including virtual relays
 
 inline int logicalToPhys(int v, bool al) { return al ? (v ? LOW : HIGH) : (v ? HIGH : LOW); }
 inline int physToLogical(int v, bool al) { return al ? (v == LOW ? 1 : 0) : (v == HIGH ? 1 : 0); }
 
 void applySafeDefaults() {
-  for (int i = 0; i < RELAY_COUNT; i++)
-    digitalWrite(RELAYS[i].pin, logicalToPhys(0, RELAYS[i].activeLow));
+  for (int i = 0; i < RELAY_COUNT; i++) {
+    relayShadow[i] = 0;
+    if (RELAYS[i].pin >= 0) {
+      if (i == PUMP_PWM_IDX) {
+        // Ensure pump output is off
+        ledcWrite(PUMP_PWM_CHANNEL, 0);
+      } else {
+        digitalWrite(RELAYS[i].pin, logicalToPhys(0, RELAYS[i].activeLow));
+      }
+    }
+  }
 }
 
 // ============================================================================
@@ -107,8 +126,13 @@ void sendStatus() {
   strlcpy(msg.device, "esp4", sizeof(msg.device));
   msg.relay_count  = RELAY_COUNT;
   msg.sensor_count = 5;
-  for (int i = 0; i < RELAY_COUNT; i++)
-    msg.relays[i] = physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow);
+  for (int i = 0; i < RELAY_COUNT; i++) {
+    if (RELAYS[i].pin >= 0 && i != PUMP_PWM_IDX) {
+      msg.relays[i] = physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow);
+    } else {
+      msg.relays[i] = relayShadow[i];
+    }
+  }
   for (int i = 0; i < 5; i++)
     msg.sensors[i] = currentValues[i];
   msg.flow = flow_L_per_min;
@@ -129,7 +153,16 @@ void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
     int idx = msg.idx, val = msg.val;
     Serial.printf("[CMD] RELAY Received: idx=%d, val=%d\n", idx, val);
     if (idx >= 0 && idx < RELAY_COUNT) {
-      digitalWrite(RELAYS[idx].pin, logicalToPhys(val, RELAYS[idx].activeLow));
+      relayShadow[idx] = val ? 1 : 0;
+      if (RELAYS[idx].pin >= 0) {
+        if (idx == PUMP_PWM_IDX) {
+          // Map boolean relay state to fixed-duty PWM on L298N
+          int duty = val ? PUMP_PWM_ON_DUTY : 0;
+          ledcWrite(PUMP_PWM_CHANNEL, duty);
+        } else {
+          digitalWrite(RELAYS[idx].pin, logicalToPhys(val, RELAYS[idx].activeLow));
+        }
+      }
       Serial.printf("Relay %d (%s) → %s\n", idx, RELAYS[idx].name, val ? "AN" : "AUS");
       sendStatus();
     }
@@ -152,8 +185,17 @@ void setup() {
   lastFlowMillis = millis();
 
   // Relais — sichere Defaults sofort setzen
-  for (int i = 0; i < RELAY_COUNT; i++)
-    pinMode(RELAYS[i].pin, OUTPUT);
+  for (int i = 0; i < RELAY_COUNT; i++) {
+    if (RELAYS[i].pin >= 0) {
+      pinMode(RELAYS[i].pin, OUTPUT);
+    }
+  }
+  // PWM for pump on L298N (uses RELAYS[PUMP_PWM_IDX].pin)
+  if (RELAYS[PUMP_PWM_IDX].pin >= 0) {
+    ledcSetup(PUMP_PWM_CHANNEL, PUMP_PWM_FREQ, PUMP_PWM_RES_BITS);
+    ledcAttachPin(RELAYS[PUMP_PWM_IDX].pin, PUMP_PWM_CHANNEL);
+    ledcWrite(PUMP_PWM_CHANNEL, 0);
+  }
   applySafeDefaults();
 
   // ESP-NOW
@@ -202,7 +244,13 @@ void loop() {
   if (now - lastLog >= 1000) {
     lastLog = now;
     Serial.print("[LOG] Relais: ");
-    for (int i=0; i<RELAY_COUNT; i++) Serial.print(physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow));
+    for (int i=0; i<RELAY_COUNT; i++) {
+      if (RELAYS[i].pin >= 0 && i != PUMP_PWM_IDX) {
+        Serial.print(physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow));
+      } else {
+        Serial.print(relayShadow[i]);
+      }
+    }
     Serial.printf(" | Flow: %.1f L/min | I0: %.1f mA | I4: %.1f mA\n", flow_L_per_min, currentValues[0], currentValues[4]);
   }
 
