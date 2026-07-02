@@ -212,10 +212,10 @@ function switchModalTab(tabId) {
 }
 
 const nodeDeviceMap = {
-    'gas': { device: 'esp1', offset: 1 },
-    'coal': { device: 'esp2', offset: 9 },
-    'elektro': { device: 'esp4', offset: 13 },
-    'heatpump': { device: 'esp3', offset: 19 }
+    'gas': { device: 'esp1' },
+    'coal': { device: 'esp2' },
+    'elektro': { device: 'esp4' },
+    'heatpump': { device: 'esp3' }
 };
 
 async function loadModalControls(nodeId) {
@@ -264,9 +264,7 @@ async function loadModalControls(nodeId) {
         
         list.innerHTML = '';
         
-        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-            const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (mapping.offset + i);
             const name = meta.names[i] || `Relay ${i}`;
             
             let val = 0;
@@ -279,7 +277,7 @@ async function loadModalControls(nodeId) {
                     await fetch('/api/relay/set', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ global_idx: globalIdx, val: isChecked ? 1 : 0 })
+                        body: JSON.stringify({ device: mapping.device, idx: i, val: isChecked ? 1 : 0 })
                     });
                     if (window.showNotification) window.showNotification(`${name} geschaltet`, 'success');
                 } catch (e) {

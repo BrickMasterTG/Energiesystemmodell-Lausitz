@@ -291,22 +291,22 @@
   // RELAY CONTROLS
   // ============================================================================
 
-  function mkRelayRow(globalIdx, name, state) {
+  function mkRelayRow(device, idx, name, state) {
     const row = document.createElement('div');
     row.className = 'relay-row';
 
     const label = document.createElement('div');
     label.className = 'label';
-    label.innerHTML = '<strong>' + name + '</strong><div class="small">#' + globalIdx + '</div>';
+    label.innerHTML = '<strong>' + name + '</strong><div class="small">' + device + '-' + idx + '</div>';
 
     const sw = document.createElement('label');
     sw.className = 'switch';
 
     const input = document.createElement('input');
     input.type = 'checkbox';
-    input.id = 'g' + globalIdx;
+    input.id = device + '-' + idx;
     input.checked = (state == 1);
-    input.onchange = () => toggleRelay(globalIdx, input.checked ? 1 : 0, input);
+    input.onchange = () => toggleRelay(device, idx, input.checked ? 1 : 0, input);
 
     const span = document.createElement('span');
     span.className = 'slider';
@@ -338,19 +338,11 @@
 
     container.innerHTML = '';
 
-    let startIdx;
-    if (device === 'esp1') startIdx = 1;
-    else if (device === 'esp2') startIdx = 9;
-    else if (device === 'esp4') startIdx = 13;
-    else startIdx = 19;
-
     const count = meta.count || meta.relayCount || 0;
     const names = meta.names || [];
-    const globalIndices = meta.global_indices || [];
 
     for (let i = 0; i < count; i++) {
       const name = names[i] || ('Relay ' + (i + 1));
-      const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (startIdx + i);
 
       let st = 0;
       if (device === 'esp4' || device === 'esp3') {
@@ -359,7 +351,7 @@
         st = (state['r' + i] !== undefined) ? state['r' + i] : 0;
       }
 
-      container.appendChild(mkRelayRow(globalIdx, name, st));
+      container.appendChild(mkRelayRow(device, i, name, st));
     }
   }
 
@@ -372,10 +364,10 @@
     ]);
   }
 
-  async function toggleRelay(globalIdx, val, inputElement) {
-    const requestKey = 'relay-' + globalIdx;
+  async function toggleRelay(device, idx, val, inputElement) {
+    const requestKey = 'relay-' + device + '-' + idx;
     if (!tryStartRequest(requestKey)) {
-      console.log('Relay request already pending for', globalIdx);
+      console.log('Relay request already pending for', device, idx);
       inputElement.checked = !inputElement.checked;
       return;
     }
@@ -386,7 +378,7 @@
       let r = await fetchWithTimeout('/api/relay/set', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ global_idx: globalIdx, val })
+        body: JSON.stringify({ device, idx, val })
       });
 
       if (!r.ok) {
@@ -403,11 +395,6 @@
 
       setTimeout(async () => {
         inputElement.disabled = false;
-        let device;
-        if (globalIdx <= 8) device = 'esp1';
-        else if (globalIdx <= 12) device = 'esp2';
-        else if (globalIdx <= 18) device = 'esp4';
-        else device = 'esp3';
         await refreshDeviceState(device);
       }, 100);
     } catch (e) {
@@ -430,17 +417,9 @@
     const meta = App.metaCache[device];
     if (!meta || !state) return;
 
-    let startIdx;
-    if (device === 'esp1') startIdx = 1;
-    else if (device === 'esp2') startIdx = 9;
-    else if (device === 'esp4') startIdx = 13;
-    else startIdx = 19;
-
     const count = meta.count || meta.relayCount || 0;
-    const globalIndices = meta.global_indices || [];
     for (let i = 0; i < count; i++) {
-      const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (startIdx + i);
-      const checkbox = $('g' + globalIdx);
+      const checkbox = $(device + '-' + i);
       if (checkbox) {
         const newState = (device === 'esp4' || device === 'esp3')
           ? (state.relays ? state.relays[i] === 1 : false)

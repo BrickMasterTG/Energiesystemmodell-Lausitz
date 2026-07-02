@@ -3,7 +3,7 @@
 
 import time
 from flask import Blueprint, jsonify, request
-from config import RELAY_CONFIG, SENSOR_CONFIG, GLOBAL_MAP, ESP4_SENSOR_CALIBRATION, VERBOSE
+from config import RELAY_CONFIG, SENSOR_CONFIG, ESP4_SENSOR_CALIBRATION, VERBOSE
 from config import report_status
 from esp_client import host_forward
 
@@ -23,18 +23,16 @@ def api_device_meta(device):
     if VERBOSE: print(f"\n[INFO] === Request: /api/device_meta/{device} ===")
 
     # Build fallback meta from RELAY_CONFIG
-    fallback_meta = {"count": 0, "names": [], "global_indices": []}
-    device_relays = [(k, v) for k, v in RELAY_CONFIG.items() if v["device"] == device]
-    if device_relays:
-        max_idx = max([v["idx"] for k, v in device_relays])
-        fallback_meta["count"] = max_idx + 1
-        names = ["Unbelegt"] * (max_idx + 1)
-        global_indices = [-1] * (max_idx + 1)
-        for k, v in device_relays:
-            names[v["idx"]] = v["name"]
-            global_indices[v["idx"]] = k
+    fallback_meta = {"count": 0, "names": []}
+    device_relays = RELAY_CONFIG.get(device, {})
+    if isinstance(device_relays, dict) and device_relays:
+        max_idx = max(device_relays.keys())
+        fallback_meta["count"] = int(max_idx) + 1
+        names = ["Unbelegt"] * (int(max_idx) + 1)
+        for idx, cfg in device_relays.items():
+            if isinstance(cfg, dict):
+                names[int(idx)] = cfg.get("name", "Unbelegt")
         fallback_meta["names"] = names
-        fallback_meta["global_indices"] = global_indices
 
     try:
         now = time.time()
@@ -65,7 +63,7 @@ def api_device_state(device):
         fallback_state = {"running": False, "pwm": 0, "relays": [0, 0, 0, 0]}
     elif device == "esp4":
         fallback_state = {
-            "relays": [0,0,0,0,0,0],
+            "relays": [0,0,0,0,0,0,0],
             "sensors": [
                 {"current":0,"pressure":0},
                 {"current":0,"pressure":0},
@@ -127,13 +125,24 @@ def api_device_state(device):
 @relays_bp.route("/api/relay/set", methods=["POST"])
 def api_relay_set():
     j = request.get_json(force=True)
-    gi = int(j.get("global_idx"))
+    device = j.get("device")
+    idx_raw = j.get("idx")
+    if not device or idx_raw is None:
+        return jsonify({"error": "missing device or idx"}), 400
+
+    try:
+        idx = int(idx_raw)
+    except Exception:
+        return jsonify({"error": "invalid idx"}), 400
+
     val = 1 if int(j.get("val")) else 0
-    if gi not in GLOBAL_MAP:
-        return jsonify({"error": "invalid index"}), 400
-    device, idx = GLOBAL_MAP[gi]
+
+    device_relays = RELAY_CONFIG.get(device, {})
+    if not isinstance(device_relays, dict) or idx not in device_relays:
+        return jsonify({"error": "invalid device or idx"}), 400
+
     path = f"/set?idx={idx}&val={val}"
-    print(f"[INFO] Relay set: global={gi}, device={device}, idx={idx}, val={val}")
+    print(f"[INFO] Relay set: device={device}, idx={idx}, val={val}")
     try:
         res = host_forward(device, "GET", path, timeout=10)
         code = res.get("code", -1)

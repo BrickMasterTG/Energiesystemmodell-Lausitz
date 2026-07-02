@@ -488,6 +488,7 @@
       3: 'electro-controls',
       4: 'electro-controls',
       5: 'electro-controls',
+      6: 'electro-controls',
     },
     esp3: {
       0: 'lake-controls',
@@ -546,11 +547,10 @@
 
       if (meta && meta.names) {
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = 1 + i;
           const name = meta.names[i] || `Relay ${i}`;
           const val = state[`r${i}`] || 0;
 
-          const item = createRelayItem(globalIdx, name, val);
+          const item = createRelayItem('esp1', i, name, val);
 
           const targetId = RELAY_MAPPING.esp1[i] || 'reserve-controls';
           const targetContainer = $(targetId);
@@ -583,11 +583,10 @@
 
       if (meta && meta.names) {
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = 9 + i;
           const name = meta.names[i] || `Relay ${i}`;
           const val = state[`r${i}`] || 0;
 
-          const item = createRelayItem(globalIdx, name, val);
+          const item = createRelayItem('esp2', i, name, val);
 
           const targetId = RELAY_MAPPING.esp2[i] || 'reserve-controls';
           const targetContainer = $(targetId);
@@ -619,13 +618,11 @@
       const state = stateData.body || stateData;
 
       if (meta && meta.names) {
-        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (19 + i);
           const name = meta.names[i] || `Relay ${i}`;
           const val = state.relays && state.relays[i] ? state.relays[i] : 0;
 
-          const item = createRelayItem(globalIdx, name, val);
+          const item = createRelayItem('esp3', i, name, val);
 
           const targetId = RELAY_MAPPING.esp3 && RELAY_MAPPING.esp3[i] ? RELAY_MAPPING.esp3[i] : 'reserve-controls';
           const targetContainer = $(targetId);
@@ -657,13 +654,11 @@
       const state = stateData.body || stateData;
 
       if (meta && meta.names) {
-        const globalIndices = meta.global_indices || [];
         for (let i = 0; i < meta.count; i++) {
-          const globalIdx = (globalIndices[i] !== undefined && globalIndices[i] !== -1) ? globalIndices[i] : (13 + i);
           const name = meta.names[i] || `Relay ${i}`;
           const val = state.relays && state.relays[i] ? state.relays[i] : 0;
 
-          const item = createRelayItem(globalIdx, name, val);
+          const item = createRelayItem('esp4', i, name, val);
 
           const targetId = RELAY_MAPPING.esp4 && RELAY_MAPPING.esp4[i] ? RELAY_MAPPING.esp4[i] : 'reserve-controls';
           const targetContainer = $(targetId);
@@ -679,7 +674,7 @@
     }
   }
 
-  function createRelayItem(globalIndex, name, state) {
+  function createRelayItem(device, idx, name, state) {
     const item = document.createElement('div');
     item.className = 'relay-item';
 
@@ -697,9 +692,9 @@
 
     const input = document.createElement('input');
     input.type = 'checkbox';
-    input.id = `relay-${globalIndex}`;
+    input.id = `${device}-${idx}`;
     input.checked = state === 1;
-    input.onchange = () => toggleRelay(globalIndex, input.checked ? 1 : 0, input);
+    input.onchange = () => toggleRelay(device, idx, input.checked ? 1 : 0, input);
 
     const slider = document.createElement('span');
     slider.className = 'toggle-slider';
@@ -713,8 +708,8 @@
     return item;
   }
 
-  async function toggleRelay(globalIndex, val, inputElement) {
-    const requestKey = 'relay-' + globalIndex;
+  async function toggleRelay(device, idx, val, inputElement) {
+    const requestKey = 'relay-' + device + '-' + idx;
     if (!tryStartRequest(requestKey)) {
       inputElement.checked = !inputElement.checked;
       return;
@@ -726,7 +721,7 @@
       const response = await fetch('/api/relay/set', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ global_idx: globalIndex, val: val }),
+        body: JSON.stringify({ device, idx, val: val }),
       });
 
       if (!response.ok) throw new Error('Request failed');

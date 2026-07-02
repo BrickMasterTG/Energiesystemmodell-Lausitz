@@ -3,7 +3,7 @@
 
 import time
 from flask import Blueprint, jsonify, request
-from config import GLOBAL_MAP, get_relay_id, load_scenarios
+from config import RELAY_CONFIG, load_scenarios
 from esp_client import host_get, host_forward
 
 scenarios_bp = Blueprint('scenarios', __name__)
@@ -50,6 +50,30 @@ def api_scenario_execute():
     print(f"[SCENARIO START] '{scenario_name}' ({len(actions)} Aktionen)")
     print("="*50)
 
+    def resolve_relay_action(a):
+        """Resolve relay action to (device, idx). Supports (device, idx) or relay by name."""
+        if a.get("device") is not None and a.get("idx") is not None:
+            dev = a.get("device")
+            try:
+                ridx = int(a.get("idx"))
+            except Exception:
+                return None
+            if dev in RELAY_CONFIG and isinstance(RELAY_CONFIG.get(dev), dict) and ridx in RELAY_CONFIG[dev]:
+                return dev, ridx
+            return None
+
+        name = a.get("name") or a.get("relay")
+        if not name:
+            return None
+        name_l = str(name).lower()
+        for dev, relays in RELAY_CONFIG.items():
+            if not isinstance(relays, dict):
+                continue
+            for ridx, cfg in relays.items():
+                if isinstance(cfg, dict) and str(cfg.get("name", "")).lower() == name_l:
+                    return dev, int(ridx)
+        return None
+
     for idx, action in enumerate(actions):
         try:
             atype = action.get("type")
@@ -62,24 +86,20 @@ def api_scenario_execute():
                 print("OK")
 
             elif atype == "relay":
-                identifier = action.get("name") or action.get("relay") or action.get("global_idx")
-                gi = get_relay_id(identifier)
                 val = 1 if int(action.get("val")) else 0
                 state_str = "AN" if val else "AUS"
-                print(f"{prefix} Schalte '{identifier}' -> {state_str} ... ", end="", flush=True)
+                resolved = resolve_relay_action(action)
+                ident = action.get("name") or action.get("relay") or f'{action.get("device")}:{action.get("idx")}'
+                print(f"{prefix} Schalte '{ident}' -> {state_str} ... ", end="", flush=True)
 
-                if gi is not None:
-                    if gi in GLOBAL_MAP:
-                        device, dev_idx = GLOBAL_MAP[gi]
-                        path = f"/set?idx={dev_idx}&val={val}"
-                        host_forward(device, "GET", path, timeout=10)
-                        print("OK")
-                    else:
-                        print("FEHLER")
-                        raise Exception(f"Device mapping not found for global index {gi}.")
-                else:
+                if resolved is None:
                     print("FEHLER")
-                    raise Exception(f"Relay mapping not found for '{identifier}'.")
+                    raise Exception(f"Relay mapping not found for '{ident}'.")
+
+                device, dev_idx = resolved
+                path = f"/set?idx={dev_idx}&val={val}"
+                host_forward(device, "GET", path, timeout=10)
+                print("OK")
 
             elif atype == "wind":
                 val_w = 1 if int(action.get("val", 0)) else 0

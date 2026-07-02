@@ -35,47 +35,38 @@ def report_status(device, is_online, error_msg=None):
 # ============================================================================
 
 RELAY_CONFIG = {
-    1: {"device": "esp1", "idx": 0, "name": "Ventil - 1"},
-    2: {"device": "esp1", "idx": 1, "name": "Ventil - 2"},
-    3: {"device": "esp1", "idx": 2, "name": "Heizstab"},
-    4: {"device": "esp1", "idx": 3, "name": "Zünder"},
-    5: {"device": "esp1", "idx": 4, "name": "Gasventil"},
-    6: {"device": "esp1", "idx": 5, "name": "Kühler"},
-    7: {"device": "esp1", "idx": 6, "name": "MFC"},
-    8: {"device": "esp1", "idx": 7, "name": "Unbelegt"},
-
-    9:  {"device": "esp2", "idx": 0, "name": "Kühler-Kohle"},
-    10: {"device": "esp2", "idx": 1, "name": "Ventil Turbine"},
-    11: {"device": "esp2", "idx": 2, "name": "Ventil-Kohle"},
-    12: {"device": "esp2", "idx": 3, "name": "Heizstab-Kohle"},
-
-    13: {"device": "esp4", "idx": 0, "name": "Elekrolyseur"},
-    14: {"device": "esp4", "idx": 1, "name": "Tank füllen"},
-    15: {"device": "esp4", "idx": 2, "name": "Tank leeren"},
-    16: {"device": "esp4", "idx": 3, "name": "Durchschalten"},
-    17: {"device": "esp4", "idx": 4, "name": "Lüfter"},
-    18: {"device": "esp4", "idx": 5, "name": "Elekrolyseur-Pumpe"},
-
-    19: {"device": "esp3", "idx": 0, "name": "Pumpe 1"},
-    20: {"device": "esp3", "idx": 1, "name": "Pumpe 2"},
-    21: {"device": "esp3", "idx": 2, "name": "Ventil 1"},
-    22: {"device": "esp3", "idx": 3, "name": "Ventil 2"},
+    "esp1": {
+        0: {"name": "Ventil - 1"},
+        1: {"name": "Ventil - 2"},
+        2: {"name": "Heizstab"},
+        3: {"name": "Zünder"},
+        4: {"name": "Gasventil"},
+        5: {"name": "Kühler"},
+        6: {"name": "MFC"},
+        7: {"name": "Unbelegt"},
+    },
+    "esp2": {
+        0: {"name": "Kühler-Kohle"},
+        1: {"name": "Ventil Turbine"},
+        2: {"name": "Ventil-Kohle"},
+        3: {"name": "Heizstab-Kohle"},
+    },
+    "esp4": {
+        0: {"name": "Elekrolyseur"},
+        1: {"name": "Tank füllen"},
+        2: {"name": "Tank leeren"},
+        3: {"name": "Durchschalten"},
+        4: {"name": "Lüfter"},
+        5: {"name": "Windrad-LED"},
+        6: {"name": "Windrad-Motor"},
+    },
+    "esp3": {
+        0: {"name": "Pumpe 1"},
+        1: {"name": "Pumpe 2"},
+        2: {"name": "Ventil 1"},
+        3: {"name": "Ventil 2"},
+    },
 }
-
-# Flat mapping: global relay index -> (device, device_idx)
-GLOBAL_MAP = {k: (v["device"], v["idx"]) for k, v in RELAY_CONFIG.items()}
-
-def get_relay_id(identifier):
-    """Resolve a relay name, number string, or integer to a global relay id."""
-    if isinstance(identifier, int):
-        return identifier
-    if isinstance(identifier, str):
-        if identifier.isdigit():
-            return int(identifier)
-        for k, v in RELAY_CONFIG.items():
-            if str(v["name"]).lower() == str(identifier).lower():
-                return k
-    return None
 
 # ============================================================================
 # SENSOR CONFIG

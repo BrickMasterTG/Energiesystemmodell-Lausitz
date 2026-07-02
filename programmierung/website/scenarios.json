@@ -3,116 +3,32 @@
         "name": "Notaus",
         "description": "Notaus",
         "actions": [
-            {
-                "type": "relay",
-                "global_idx": 1,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 2,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 3,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 4,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 5,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 6,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 7,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 8,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 9,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 10,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 11,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 12,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 13,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 14,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 15,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 16,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 17,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 18,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 19,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 20,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 21,
-                "val": 0
-            },
-            {
-                "type": "relay",
-                "global_idx": 22,
-                "val": 0
-            }
+            { "type": "relay", "device": "esp1", "idx": 0, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 1, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 2, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 3, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 4, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 5, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 6, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 7, "val": 0 },
+
+            { "type": "relay", "device": "esp2", "idx": 0, "val": 0 },
+            { "type": "relay", "device": "esp2", "idx": 1, "val": 0 },
+            { "type": "relay", "device": "esp2", "idx": 2, "val": 0 },
+            { "type": "relay", "device": "esp2", "idx": 3, "val": 0 },
+
+            { "type": "relay", "device": "esp4", "idx": 0, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 1, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 2, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 3, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 4, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 5, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 6, "val": 0 },
+
+            { "type": "relay", "device": "esp3", "idx": 0, "val": 0 },
+            { "type": "relay", "device": "esp3", "idx": 1, "val": 0 },
+            { "type": "relay", "device": "esp3", "idx": 2, "val": 0 },
+            { "type": "relay", "device": "esp3", "idx": 3, "val": 0 }
         ]
     },
     
@@ -122,7 +38,8 @@
         "actions": [
             {
                 "type": "relay",
-                "global_idx": 1,
+                "device": "esp1",
+                "idx": 0,
                 "val": 1
             },
             {
@@ -131,7 +48,8 @@
             },
             {
                 "type": "relay",
-                "global_idx": 1,
+                "device": "esp1",
+                "idx": 0,
                 "val": 0
             }
         ]
@@ -309,38 +227,32 @@
         "name": "Netzbezug",
         "description": "Strom aus dem Netz beziehen",
         "target_card": "external",
-        "actions": [
-            { "type": "relay", "global_idx": 19, "val": 1 }
-        ]
+        "actions": []
     },
     "netz_export": {
         "name": "Netzeinspeisung",
         "description": "Strom in das Netz einspeisen",
         "target_card": "external",
-        "actions": [
-            { "type": "relay", "global_idx": 19, "val": 1 }
-        ]
+        "actions": []
     },
     "netz_aus": {
         "name": "Netzanschluss aus",
         "description": "Vom Netz trennen",
         "target_card": "external",
-        "actions": [
-            { "type": "relay", "global_idx": 19, "val": 0 }
-        ]
+        "actions": []
     },
     "gas_an": {
         "name": "Gas an",
         "description": "Gaskraftwerk einschalten",
         "target_card": "gas",
         "actions": [
-            { "type": "relay", "global_idx": 7, "val": 1 },
+            { "type": "relay", "device": "esp1", "idx": 6, "val": 1 },
             { "type": "delay", "ms": 1000 },
-            { "type": "relay", "global_idx": 5, "val": 1 },
+            { "type": "relay", "device": "esp1", "idx": 4, "val": 1 },
             { "type": "delay", "ms": 4000 },
-            { "type": "relay", "global_idx": 4, "val": 1 },
+            { "type": "relay", "device": "esp1", "idx": 3, "val": 1 },
             { "type": "delay", "ms": 2000 },
-            { "type": "relay", "global_idx": 4, "val": 0 }
+            { "type": "relay", "device": "esp1", "idx": 3, "val": 0 }
         ]
     },
     "gas_aus": {
@@ -348,9 +260,9 @@
         "description": "Gaskraftwerk ausschalten",
         "target_card": "gas",
         "actions": [
-            { "type": "relay", "global_idx": 7, "val": 0 },
+            { "type": "relay", "device": "esp1", "idx": 6, "val": 0 },
             { "type": "delay", "ms": 1000 },
-            { "type": "relay", "global_idx": 5, "val": 0 }
+            { "type": "relay", "device": "esp1", "idx": 4, "val": 0 }
         ]
     },
     "kohlekraftwerk_startup": {
@@ -358,7 +270,7 @@
         "description": "Fährt das Kohlekraftwerk hoch",
         "target_card": "coal",
         "actions": [
-            { "type": "relay", "global_idx": 12, "val": 1 }
+            { "type": "relay", "device": "esp2", "idx": 3, "val": 1 }
         ]
     },
     "kohlekraftwerk_shutdown": {
@@ -366,7 +278,7 @@
         "description": "Fährt das Kohlekraftwerk herunter",
         "target_card": "coal",
         "actions": [
-            { "type": "relay", "global_idx": 12, "val": 0 }
+            { "type": "relay", "device": "esp2", "idx": 3, "val": 0 }
         ]
     },
     "wind_an": {
@@ -374,7 +286,9 @@
         "description": "Windkraftanlage einschalten",
         "target_card": "wind",
         "actions": [
-            { "type": "wind", "val": 1 }
+            { "type": "wind", "val": 1 },
+            { "type": "relay", "device": "esp4", "idx": 5, "val": 1 },
+            { "type": "relay", "device": "esp4", "idx": 6, "val": 1 }
         ]
     },
     "wind_aus": {
@@ -382,7 +296,9 @@
         "description": "Windkraftanlage ausschalten",
         "target_card": "wind",
         "actions": [
-            { "type": "wind", "val": 0 }
+            { "type": "wind", "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 5, "val": 0 },
+            { "type": "relay", "device": "esp4", "idx": 6, "val": 0 }
         ]
     },
     "heatpump_aus": {
@@ -390,8 +306,7 @@
         "description": "Wärmemumpe ausschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "global_idx": 19, "val": 0 },
-            { "type": "relay", "global_idx": 20, "val": 0 }
+            { "type": "relay", "device": "esp3", "idx": 1, "val": 0 }
         ]
     },
     "heatpump_an": {
@@ -399,8 +314,7 @@
         "description": "Wärmemumpe einschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "global_idx": 19, "val": 1 },
-            { "type": "relay", "global_idx": 20, "val": 1 }
+            { "type": "relay", "device": "esp3", "idx": 1, "val": 1 }
         ]
     }
 }
