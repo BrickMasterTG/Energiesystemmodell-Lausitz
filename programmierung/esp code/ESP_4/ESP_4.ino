@@ -15,15 +15,14 @@
 // ============================================================================
 struct RelayConfig { int8_t pin; const char* name; bool activeLow; };
 const int   PUMP_PWM_IDX      = 5;      // uses RELAYS[5] ("Elektrolyseur-Pumpe")
-const int   PUMP_PWM_CHANNEL  = 0;
 const int   PUMP_PWM_FREQ     = 20000;  // 20 kHz for quiet operation
 const int   PUMP_PWM_RES_BITS = 8;
 const int   PUMP_PWM_MAX      = (1 << PUMP_PWM_RES_BITS) - 1;
 const int   PUMP_PWM_ON_DUTY  = (int)(PUMP_PWM_MAX * (2.5f / 12.0f) + 0.5f);
 
 // NEU: Richtungspins für L298N (IN1/IN2) — Pins noch anpassen, sobald bekannt!
-const int   PUMP_IN1 = -1;   // TODO: GPIO eintragen
-const int   PUMP_IN2 = -1;   // TODO: GPIO eintragen
+const int   PUMP_IN1 = 14;   // TODO: GPIO eintragen
+const int   PUMP_IN2 = 33;   // TODO: GPIO eintragen
 const uint8_t RELAY_COUNT = 8;
 RelayConfig RELAYS[RELAY_COUNT] = {
   {18, "Elektrolyseur", true}, // High-Trigger
@@ -31,9 +30,9 @@ RelayConfig RELAYS[RELAY_COUNT] = {
   {21, "Mitte Relay",   true},
   {22, "Innen Relay",   true},
   {23, "Lüfter",        true},
-  {5, "Elektrolyseur-Pumpe", true},
-  {-1, "Windrad-LED",   true}, // Placeholder: no physical pin wired yet
-  {-1, "Windrad-Motor", true}, // Placeholder: no physical pin wired yet
+  {26, "Elektrolyseur-Pumpe", true},
+  {33, "Windrad-LED",   true}, // Placeholder: no physical pin wired yet
+  {27, "Windrad-Motor", true}, // Placeholder: no physical pin wired yet
 };
 int relayShadow[RELAY_COUNT] = {0}; // Stores logical states, including virtual relays
 
@@ -46,7 +45,7 @@ void applySafeDefaults() {
     if (RELAYS[i].pin >= 0) {
       if (i == PUMP_PWM_IDX) {
         // Ensure pump output is off
-        ledcWrite(PUMP_PWM_CHANNEL, 0);
+        ledcWrite(RELAYS[PUMP_PWM_IDX].pin, 0);   // ← Pin statt Kanal
       } else {
         digitalWrite(RELAYS[i].pin, logicalToPhys(0, RELAYS[i].activeLow));
       }
@@ -161,7 +160,7 @@ void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
         if (idx == PUMP_PWM_IDX) {
           // Map boolean relay state to fixed-duty PWM on L298N
           int duty = val ? PUMP_PWM_ON_DUTY : 0;
-          ledcWrite(PUMP_PWM_CHANNEL, duty);
+          ledcWrite(RELAYS[PUMP_PWM_IDX].pin, duty);   // ← Pin statt Kanal
         } else {
           digitalWrite(RELAYS[idx].pin, logicalToPhys(val, RELAYS[idx].activeLow));
         }
@@ -195,11 +194,9 @@ void setup() {
   }
   // PWM for pump on L298N (uses RELAYS[PUMP_PWM_IDX].pin)
   if (RELAYS[PUMP_PWM_IDX].pin >= 0) {
-    ledcSetup(PUMP_PWM_CHANNEL, PUMP_PWM_FREQ, PUMP_PWM_RES_BITS);
-    ledcAttachPin(RELAYS[PUMP_PWM_IDX].pin, PUMP_PWM_CHANNEL);
-    ledcWrite(PUMP_PWM_CHANNEL, 0);
+    ledcAttach(RELAYS[PUMP_PWM_IDX].pin, PUMP_PWM_FREQ, PUMP_PWM_RES_BITS);
+    ledcWrite(RELAYS[PUMP_PWM_IDX].pin, 0);
   }
-
   // NEU: Richtungspins für die Pumpe (L298N IN1/IN2)
   if (PUMP_IN1 >= 0 && PUMP_IN2 >= 0) {
     pinMode(PUMP_IN1, OUTPUT);
