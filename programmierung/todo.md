@@ -16,6 +16,7 @@
 - [ ] Pumpe Elektrolyseur
 - [ ] Code aufräumen
     - [ ] esp3.py vereinfachen/auflösen/generaliesieren
+- [ ] "Testserver" implementieren, der ohne ESPs nur auf Laptop läuft und esps immitiert und graphisch simuliert
 
 ## 🟢 Erledigt
 - [x] Beispiel: Erledigte Aufgabe
