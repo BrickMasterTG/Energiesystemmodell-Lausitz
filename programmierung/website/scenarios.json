@@ -32,29 +32,7 @@
             { "type": "relay", "device": "esp3", "idx": 3, "val": 0 }
         ]
     },
-    
-    "test_sequenz": {
-        "name": "Test-Sequenz",
-        "description": "Alle Test-Relays checken",
-        "actions": [
-            {
-                "type": "relay",
-                "device": "esp1",
-                "idx": 0,
-                "val": 1
-            },
-            {
-                "type": "delay",
-                "ms": 1000
-            },
-            {
-                "type": "relay",
-                "device": "esp1",
-                "idx": 0,
-                "val": 0
-            }
-        ]
-    },
+   
     "elektrolyseur_an": {
         "name": "Elektrolyseur an",
         "description": "Elektrolyseur an",
@@ -65,6 +43,15 @@
                 "type": "relay",
                 "name": "Lüfter",
                 "val": 1
+            },
+            {
+                "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
+                "val": 1
+            },
+            {
+                "type": "delay",
+                "ms": 1500
             },
             {
                 "type": "relay",
@@ -101,7 +88,12 @@
             },
             {
                 "type": "delay",
-                "ms": 3000
+                "ms": 2000
+            },
+            {
+                "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
+                "val": 0
             },
             {
                 "type": "relay",
@@ -119,6 +111,11 @@
             {
                 "type": "relay",
                 "name": "Lüfter",
+                "val": 1
+            },
+            {
+                "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
                 "val": 1
             },
             {
@@ -160,6 +157,15 @@
             },
             {
                 "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
+                "val": 1
+            },
+            {
+                "type": "delay",
+                "ms": 2000
+            },
+            {
+                "type": "relay",
                 "name": "Elekrolyseur",
                 "val": 1
             }
@@ -174,6 +180,11 @@
                 "type": "relay",
                 "name": "Elekrolyseur",
                 "val": 0
+            },
+            {
+                "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
+                "val": 1
             },
             {
                 "type": "relay",
@@ -205,6 +216,11 @@
             {
                 "type": "relay",
                 "name": "Elekrolyseur",
+                "val": 0
+            },
+            {
+                "type": "relay",
+                "name": "Elektrolyseur-Pumpe",
                 "val": 0
             },
             {
@@ -247,13 +263,13 @@
         "description": "Gaskraftwerk einschalten",
         "target_card": "gas",
         "actions": [
-            { "type": "relay", "device": "esp1", "idx": 6, "val": 1 },
-            { "type": "delay", "ms": 1000 },
-            { "type": "relay", "device": "esp1", "idx": 4, "val": 1 },
+            { "type": "relay", "name": "MFC", "val": 1 },
+            { "type": "delay", "ms": 500 },
+            { "type": "relay", "name": "Gasventil", "val": 1 },
             { "type": "delay", "ms": 4000 },
-            { "type": "relay", "device": "esp1", "idx": 3, "val": 1 },
+            { "type": "relay", "name": "Zünder", "val": 1 },
             { "type": "delay", "ms": 2000 },
-            { "type": "relay", "device": "esp1", "idx": 3, "val": 0 }
+            { "type": "relay", "name": "Zünder", "val": 0 }
         ]
     },
     "gas_aus": {
@@ -261,9 +277,9 @@
         "description": "Gaskraftwerk ausschalten",
         "target_card": "gas",
         "actions": [
-            { "type": "relay", "device": "esp1", "idx": 6, "val": 0 },
-            { "type": "delay", "ms": 1000 },
-            { "type": "relay", "device": "esp1", "idx": 4, "val": 0 }
+            { "type": "relay", "name": "Gasventil", "val": 0 },
+            { "type": "delay", "ms": 500 },
+            { "type": "relay", "name": "MFC", "val": 0 }
         ]
     },
     "kohlekraftwerk_startup": {
@@ -307,7 +323,8 @@
         "description": "Wärmemumpe ausschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "device": "esp3", "idx": 1, "val": 0 }
+            { "type": "relay", "device": "esp3", "idx": 1, "val": 0 },
+            { "type": "relay", "device": "esp3", "idx": 2, "val": 1 }
         ]
     },
     "heatpump_an": {
@@ -315,7 +332,8 @@
         "description": "Wärmemumpe einschalten",
         "target_card": "lake",
         "actions": [
-            { "type": "relay", "device": "esp3", "idx": 1, "val": 1 }
+            { "type": "relay", "device": "esp3", "idx": 1, "val": 1 },
+            { "type": "relay", "device": "esp3", "idx": 2, "val": 1 }
         ]
     }
 }

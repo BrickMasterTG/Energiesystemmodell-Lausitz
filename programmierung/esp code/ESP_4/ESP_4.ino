@@ -20,19 +20,19 @@ const int   PUMP_PWM_RES_BITS = 8;
 const int   PUMP_PWM_MAX      = (1 << PUMP_PWM_RES_BITS) - 1;
 const int   PUMP_PWM_ON_DUTY  = (int)(PUMP_PWM_MAX * (2.5f / 12.0f) + 0.5f);
 
-// NEU: Richtungspins für L298N (IN1/IN2) — Pins noch anpassen, sobald bekannt!
-const int   PUMP_IN1 = 14;   // TODO: GPIO eintragen
-const int   PUMP_IN2 = 33;   // TODO: GPIO eintragen
+// NEU: Richtungspins für L298N (IN1/IN2)
+const int   PUMP_IN1 = 14;   // Check Pin
+const int   PUMP_IN2 = 33;   // Check Pin
 const uint8_t RELAY_COUNT = 8;
 RelayConfig RELAYS[RELAY_COUNT] = {
-  {18, "Elektrolyseur", true}, // High-Trigger
+  {18, "Elektrolyseur", true},
   {19, "Außen Relay",   true},
   {21, "Mitte Relay",   true},
   {22, "Innen Relay",   true},
   {23, "Lüfter",        true},
   {26, "Elektrolyseur-Pumpe", true},
-  {33, "Windrad-LED",   true}, // Placeholder: no physical pin wired yet
-  {27, "Windrad-Motor", true}, // Placeholder: no physical pin wired yet
+  {33, "Windrad-LED",   true}, // Check Pin
+  {27, "Windrad-Motor", true}, // Check Pin
 };
 int relayShadow[RELAY_COUNT] = {0}; // Stores logical states, including virtual relays
 
@@ -68,7 +68,7 @@ void readSensors() {
 }
 
 // ============================================================================
-// FLOWMETER
+// FLOWMETER - not working
 // ============================================================================
 #define FLOW_PIN 17
 float    K_FACTOR         = 1.0f; // Pulse pro Liter

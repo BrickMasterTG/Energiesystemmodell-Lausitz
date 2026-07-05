@@ -51,6 +51,12 @@ RELAY_CONFIG = {
         2: {"name": "Ventil-Kohle"},
         3: {"name": "Heizstab-Kohle"},
     },
+    "esp3": {
+        0: {"name": "Pumpe 1"},
+        1: {"name": "Pumpe 2"},
+        2: {"name": "Ventil 1"},
+        3: {"name": "Ventil 2"},
+    },
     "esp4": {
         0: {"name": "Elekrolyseur"},
         1: {"name": "Tank füllen"},
@@ -60,12 +66,6 @@ RELAY_CONFIG = {
         5: {"name": "Elektrolyseur-Pumpe"},
         6: {"name": "Windrad-LED"},
         7: {"name": "Windrad-Motor"},
-    },
-    "esp3": {
-        0: {"name": "Pumpe 1"},
-        1: {"name": "Pumpe 2"},
-        2: {"name": "Ventil 1"},
-        3: {"name": "Ventil 2"},
     },
 }
 

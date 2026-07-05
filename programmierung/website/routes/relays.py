@@ -56,7 +56,7 @@ def api_device_state(device):
     # Fallback states per device
     fallback_state = {}
     if device == "esp1":
-        fallback_state = {"r0":0,"r1":0,"r2":0,"r3":0,"r4":0,"r5":0,"r6":0,"r7":0,"temp":None,"rntc":None}
+        fallback_state = {"r0":0,"r1":0,"r2":0,"r3":0,"r4":0,"r5":0,"r6":1,"r7":0,"temp":None,"rntc":None}
     elif device == "esp2":
         fallback_state = {"r0":0,"r1":0,"r2":0,"r3":0,"temp":None,"rntc":None}
     elif device == "esp3":
