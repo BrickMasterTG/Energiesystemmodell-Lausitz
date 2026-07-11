@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 PORT = 8001
 CLIENT_NAMES = ["esp1", "esp2", "esp3", "esp4", "esp5"]
-RELAY_COUNTS = {"esp1": 8, "esp2": 4, "esp3": 4, "esp4": 8, "esp5": 0}
+RELAY_COUNTS = {"esp1": 8, "esp2": 4, "esp3": 5, "esp4": 8, "esp5": 0}
 
 # ---------------------------------------------------------------------------
 # Shared state
@@ -57,6 +57,7 @@ class DeviceState:
         else:
             self.sensor_currents = []
         self.last_rs232_res = "ACK"
+        self.mfc_setpoint = 16000  # Default 50% für MFC
 
     def touch(self):
         self.last_seen = _now_ms()
@@ -282,15 +283,30 @@ def handle_forward():
             start = cmd_pos + len(cmd_marker)
             end = path.find("&", start)
             cmd = path[start:] if end < 0 else path[start:end]
+            import urllib.parse
+            cmd = urllib.parse.unquote(cmd)
 
+        res = "ACK"
         with _lock:
             if d:
-                d.last_rs232_res = "ACK"
+                if cmd.startswith(":06030401210120"): # Read flow command
+                    import random
+                    jitter = random.randint(-200, 200)
+                    sim_val = max(0, min(32000, getattr(d, 'mfc_setpoint', 16000) + jitter))
+                    hex_val = f"{int(sim_val):04X}"
+                    res = f":0603020121{hex_val}\r\n"
+                elif cmd.startswith(":0603010121"): # Write flow setpoint
+                    try:
+                        hex_val = cmd[11:15]
+                        d.mfc_setpoint = int(hex_val, 16)
+                    except ValueError:
+                        pass
+                    res = cmd + "\r\n" # mock ACK for write
+                d.last_rs232_res = res
                 d.touch()
 
-        # Option A: dummy ACK
         _log("POST", path, target, 200, f"rs232 cmd={cmd[:40]}")
-        return jsonify({"code": 200, "body": "ACK"})
+        return jsonify({"code": 200, "body": res})
 
     if path.startswith("/led?"):
         # Option A: silently accept + log

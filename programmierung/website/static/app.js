@@ -629,6 +629,43 @@
     }
   }
 
+  async function readRsFlow() {
+    const rsFlowVal = $('rs_flow_val');
+    const rsReply = $('rs_reply');
+    
+    if (rsFlowVal) rsFlowVal.textContent = '...';
+    if (rsReply) rsReply.textContent = 'sende...';
+
+    const cmd = ':06030401210120';
+    const timeout = 500;
+
+    try {
+      let r = await fetch('/api/rs232', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cmd, timeout })
+      });
+      let j = await r.json();
+      let body = j.body || j;
+      let replyText = (typeof body === 'object') ? JSON.stringify(body, null, 2) : String(body);
+      
+      if (rsReply) rsReply.textContent = replyText;
+
+      let match = replyText.match(/:0603020121([0-9A-Fa-f]{4})/);
+      if (match && match[1]) {
+        let hexVal = match[1];
+        let intVal = parseInt(hexVal, 16);
+        let percent = (intVal / 32000) * 100;
+        if (rsFlowVal) rsFlowVal.textContent = percent.toFixed(1);
+      } else {
+        if (rsFlowVal) rsFlowVal.textContent = 'Err';
+      }
+    } catch (e) {
+      if (rsReply) rsReply.textContent = 'Fehler: ' + e;
+      if (rsFlowVal) rsFlowVal.textContent = 'Err';
+    }
+  }
+
   async function testLeds(mode, color = null) {
     try {
       const body = { mode };
@@ -789,6 +826,7 @@
   window.stopTrain = stopTrain;
   window.updateRsCommand = updateRsCommand;
   window.sendRs = sendRs;
+  window.readRsFlow = readRsFlow;
   window.testLeds = testLeds;
   window.testLedsFromPicker = testLedsFromPicker;
   window.cleanup = cleanup;

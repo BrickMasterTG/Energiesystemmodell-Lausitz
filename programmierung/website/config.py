@@ -77,20 +77,28 @@ RELAY_CONFIG = {
 # ============================================================================
 
 SENSOR_CONFIG = {
-    101: {"device": "esp1", "state_path": "temp",               "name": "Temperatur",    "unit": "°C",   "target_card": "gas"},
-    102: {"device": "esp2", "state_path": "temp",               "name": "Temperatur",    "unit": "°C",   "target_card": "coal"},
-
-    #103: {"device": "esp3", "state_path": "sensors.0.pressure", "name": "Druck 1",       "unit": "bar",  "target_card": "wind"},
-    #104: {"device": "esp3", "state_path": "sensors.1.pressure", "name": "Druck 2",       "unit": "bar",  "target_card": "wind"},
-
-    105: {"device": "esp4", "state_path": "sensors.0.pressure", "name": "Systemdruck 1", "unit": "bar",  "target_card": "electro"},
-    106: {"device": "esp4", "state_path": "sensors.1.pressure", "name": "Systemdruck 2", "unit": "bar",  "target_card": "electro"},
-    107: {"device": "esp4", "state_path": "sensors.2.pressure", "name": "Speicherdruck",  "unit": "bar",  "target_card": "electro"},
-    108: {"device": "esp4", "state_path": "sensors.3.pressure", "name": "Abstand 1",      "unit": "cm",   "target_card": "electro"},
-    109: {"device": "esp4", "state_path": "sensors.4.pressure", "name": "Abstand 2",      "unit": "cm",   "target_card": "electro"},
-    110: {"device": "esp4", "state_path": "flow",               "name": "Durchfluss",     "unit": "L/min","target_card": "electro"},
-    111: {"device": "esp3", "state_path": "sensors.0",          "name": "temp1",          "unit": "°C",   "target_card": "lake"},
-    112: {"device": "esp3", "state_path": "sensors.1",          "name": "temp2",          "unit": "°C",   "target_card": "lake"},
+    #{"type": "wait_sensor","sensor_id": 113,"condition": ">","value": 50,"timeout_ms": 30000}
+    "esp1": {
+        101: {"state_path": "temp",               "name": "Temperatur",    "unit": "°C",   "target_card": "gas"},
+        113: {"state_path": "mfc",                "name": "MFC Gasfluss",  "unit": "L/min","target_card": "gas"},
+    },
+    "esp2": {
+        102: {"state_path": "temp",               "name": "Temperatur",    "unit": "°C",   "target_card": "coal"},
+    },
+    "esp3": {
+        #103: {"state_path": "sensors.0.pressure", "name": "Druck 1",       "unit": "bar",  "target_card": "wind"},
+        #104: {"state_path": "sensors.1.pressure", "name": "Druck 2",       "unit": "bar",  "target_card": "wind"},
+        111: {"state_path": "sensors.0",          "name": "temp1",          "unit": "°C",   "target_card": "lake"},
+        112: {"state_path": "sensors.1",          "name": "temp2",          "unit": "°C",   "target_card": "lake"},
+    },
+    "esp4": {
+        105: {"state_path": "sensors.0.pressure", "name": "Systemdruck 1", "unit": "bar",  "target_card": "electro"},
+        106: {"state_path": "sensors.1.pressure", "name": "Systemdruck 2", "unit": "bar",  "target_card": "electro"},
+        107: {"state_path": "sensors.2.pressure", "name": "Speicherdruck",  "unit": "bar",  "target_card": "electro"},
+        108: {"state_path": "sensors.3.pressure", "name": "Abstand 1",      "unit": "cm",   "target_card": "electro"},
+        109: {"state_path": "sensors.4.pressure", "name": "Abstand 2",      "unit": "cm",   "target_card": "electro"},
+        110: {"state_path": "flow",               "name": "Durchfluss",     "unit": "L/min","target_card": "electro"},
+    }
 }
 
 # ============================================================================

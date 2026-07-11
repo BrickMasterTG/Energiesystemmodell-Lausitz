@@ -115,6 +115,79 @@ def api_scenario_execute():
                 host_forward("esp3", "GET", f"/train?pwm={pwm}&dir={dir_val}", timeout=10)
                 print("OK")
 
+            elif atype == "wait_sensor":
+                sensor_id = int(action.get("sensor_id"))
+                target_val = float(action.get("value"))
+                condition = action.get("condition", ">")
+                timeout_ms = int(action.get("timeout_ms", 60000))
+
+                print(f"{prefix} Warte auf Sensor {sensor_id} {condition} {target_val} (Timeout: {timeout_ms}ms) ... ", end="", flush=True)
+
+                from config import SENSOR_CONFIG
+                from routes.relays import get_device_state_dict
+
+                # Find sensor config
+                sensor_cfg = None
+                target_device = None
+                for dev, sensors in SENSOR_CONFIG.items():
+                    if sensor_id in sensors:
+                        sensor_cfg = sensors[sensor_id]
+                        target_device = dev
+                        break
+
+                if not sensor_cfg:
+                    print("FEHLER")
+                    raise Exception(f"Sensor {sensor_id} not found in SENSOR_CONFIG")
+
+                start_time = time.time()
+                timeout_s = timeout_ms / 1000.0
+                success = False
+
+                while (time.time() - start_time) < timeout_s:
+                    state_res = get_device_state_dict(target_device)
+                    body = state_res.get("body", {}) if isinstance(state_res, dict) else state_res
+                    if isinstance(body, str):
+                        try:
+                            import json
+                            body = json.loads(body)
+                        except Exception:
+                            body = {}
+
+                    val = body
+                    for p in sensor_cfg["state_path"].split("."):
+                        if isinstance(val, dict):
+                            val = val.get(p)
+                        elif isinstance(val, list) and p.isdigit():
+                            try:
+                                val = val[int(p)]
+                            except IndexError:
+                                val = None
+                                break
+                        else:
+                            val = None
+                            break
+
+                    if val is not None:
+                        try:
+                            val = float(val)
+                            if condition == ">" and val > target_val: success = True
+                            elif condition == "<" and val < target_val: success = True
+                            elif condition == ">=" and val >= target_val: success = True
+                            elif condition == "<=" and val <= target_val: success = True
+                            elif condition == "==" and abs(val - target_val) < 0.01: success = True
+
+                            if success:
+                                break
+                        except ValueError:
+                            pass
+
+                    time.sleep(1.0)
+
+                if not success:
+                    print("FEHLER (Timeout)")
+                    raise Exception(f"Timeout ({timeout_ms}ms) waiting for sensor {sensor_id} {condition} {target_val}")
+                print("OK")
+
         except Exception as e:
             err_msg = f"Failed at action {idx}: {e}"
             print(f"FEHLER: {str(e)}")

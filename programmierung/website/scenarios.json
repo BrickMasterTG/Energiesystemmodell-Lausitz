@@ -303,7 +303,7 @@
         "description": "Windkraftanlage einschalten",
         "target_card": "wind",
         "actions": [
-            { "type": "wind", "val": 1 },
+            { "type": "relay", "device": "esp3", "idx": 4, "val": 1 },
             { "type": "relay", "device": "esp4", "idx": 6, "val": 1 },
             { "type": "relay", "device": "esp4", "idx": 7, "val": 1 }
         ]
@@ -313,7 +313,7 @@
         "description": "Windkraftanlage ausschalten",
         "target_card": "wind",
         "actions": [
-            { "type": "wind", "val": 0 },
+            { "type": "relay", "device": "esp3", "idx": 4, "val": 0 },
             { "type": "relay", "device": "esp4", "idx": 6, "val": 0 },
             { "type": "relay", "device": "esp4", "idx": 7, "val": 0 }
         ]

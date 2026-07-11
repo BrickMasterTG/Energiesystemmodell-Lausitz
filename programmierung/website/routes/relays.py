@@ -17,7 +17,11 @@ _meta_cache_time = {}
 @relays_bp.route("/api/sensors/meta")
 def api_sensors_meta():
     """Returns the central sensor configuration for frontend dynamic rendering."""
-    return jsonify(SENSOR_CONFIG)
+    flat_config = {}
+    for device, sensors in SENSOR_CONFIG.items():
+        for sensor_id, config in sensors.items():
+            flat_config[sensor_id] = {"device": device, **config}
+    return jsonify(flat_config)
 @relays_bp.route("/api/device_meta/<device>")
 def api_device_meta(device):
     if VERBOSE: print(f"\n[INFO] === Request: /api/device_meta/{device} ===")
@@ -49,10 +53,7 @@ def api_device_meta(device):
         return jsonify({"code": 200, "body": fallback_meta, "offline": True})
 
 
-@relays_bp.route("/api/device_state/<device>")
-def api_device_state(device):
-    if VERBOSE: print(f"[INFO] Request: /api/device_state/{device}")
-
+def get_device_state_dict(device):
     # Fallback states per device
     fallback_state = {}
     if device == "esp1":
@@ -113,13 +114,19 @@ def api_device_state(device):
                                 sensor_data["pressure"] = round((pct * (max_val - min_val)) + min_val, 2)
 
             if VERBOSE: print(f"[INFO] State response for {device}: {res}")
-            return jsonify(res)
+            return res
         else:
             raise Exception(f"Device returned code {res.get('code')}")
 
     except Exception as e:
         report_status(device, False, str(e))
-        return jsonify({"code": 200, "body": fallback_state, "offline": True})
+        return {"code": 200, "body": fallback_state, "offline": True}
+
+@relays_bp.route("/api/device_state/<device>")
+def api_device_state(device):
+    if VERBOSE: print(f"[INFO] Request: /api/device_state/{device}")
+    res = get_device_state_dict(device)
+    return jsonify(res)
 
 
 @relays_bp.route("/api/relay/set", methods=["POST"])

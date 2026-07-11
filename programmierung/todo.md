@@ -1,11 +1,11 @@
 # TODO
 
 ## 🔴 In Arbeit
-- [ ] Aufgabe hier eintragen
-
-## 🟡 Als Nächstes
 - [ ] MFC permanent Gasdurchfluss auslesen
     - [ ] In Gaskraftwerk einschalten einbauen, sodass erst gezündet wird, wenn Gas fließt
+
+## 🟡 Als Nächstes
+
 - [ ] Sensoren überprüfen/kalibrieren/anzeigen
     - [ ] automatisiertes Ausschalten bei Grenzwerten
 - [ ] Zug

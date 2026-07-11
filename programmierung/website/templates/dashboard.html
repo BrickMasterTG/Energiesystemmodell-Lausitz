@@ -212,6 +212,10 @@
           style="width:200px; margin:0 10px;">
         <span id="rs_hex_value">3E80</span>
       </div>
+      <div style="margin-bottom:12px; display: flex; align-items: center; gap: 10px;">
+        <label>Ist-Wert (Flow): <strong id="rs_flow_val">--</strong> %</label>
+        <button onclick="readRsFlow()">Abfragen</button>
+      </div>
       <div style="margin-bottom:8px">
         <input id="rs_cmd" style="width:60%" placeholder=":06030101213E80">
         <input id="rs_timeout" type="number" value="500" style="width:80px">
