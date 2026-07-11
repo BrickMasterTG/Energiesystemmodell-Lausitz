@@ -23,15 +23,7 @@ def api_esp3_state():
         return jsonify({"code": 200, "body": {"running": False, "pwm": 0}, "offline": True})
 
 
-@esp3_bp.route("/api/esp3/set_wind", methods=["POST"])
-def api_esp3_set_wind():
-    j = request.get_json(force=True)
-    val = 1 if int(j.get("val", 0)) else 0
-    try:
-        return jsonify(host_forward("esp3", "GET", f"/set?val={val}", timeout=10))
-    except Exception as e:
-        print(f"[ERROR] /api/esp3/set_wind: {str(e)}")
-        return jsonify({"error": str(e)}), 502
+
 
 
 @esp3_bp.route("/api/esp3/set_pwm", methods=["POST"])

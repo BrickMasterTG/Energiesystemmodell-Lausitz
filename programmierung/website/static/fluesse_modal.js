@@ -215,32 +215,13 @@ const nodeDeviceMap = {
     'gas': { device: 'esp1' },
     'coal': { device: 'esp2' },
     'elektro': { device: 'esp4' },
-    'heatpump': { device: 'esp3' }
+    'heatpump': { device: 'esp3' },
+    'wind': { device: 'esp3' }
 };
 
 async function loadModalControls(nodeId) {
     const list = document.getElementById('modal-controls-list');
     list.innerHTML = '<div class="loading-spinner">Lade Komponenten...</div>';
-
-    if (nodeId === 'wind') {
-        list.innerHTML = '';
-        list.appendChild(createToggleItem('Windkraftanlage', false, async (val, input) => {
-            try {
-                input.disabled = true;
-                await fetch('/api/esp3/set_wind', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ val: val ? 1 : 0 })
-                });
-                if (window.showNotification) window.showNotification(`Wind ${val ? 'an' : 'aus'}`, 'success');
-            } catch (e) {
-                input.checked = !input.checked;
-            } finally {
-                input.disabled = false;
-            }
-        }));
-        return;
-    }
 
     const mapping = nodeDeviceMap[nodeId] || null;
     if (!mapping) {

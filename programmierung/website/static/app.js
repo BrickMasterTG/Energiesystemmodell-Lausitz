@@ -536,9 +536,6 @@
   function updateEsp3LegacyUI(state3) {
     if (!state3) return;
 
-    const elWind = $('windState');
-    if (elWind) elWind.textContent = state3.running ? 'AN' : 'AUS';
-
     const elPwm = $('pwmVal');
     if (elPwm) elPwm.textContent = state3.pwm;
 
@@ -551,15 +548,6 @@
     if (dirBox) {
       dirBox.checked = !state3.forward;
     }
-  }
-
-  async function setWind(val) {
-    await fetch('/api/esp3/set_wind', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ val })
-    });
-    setTimeout(() => refreshDeviceState('esp3'), 100);
   }
 
   async function setPwm(v) {
@@ -797,7 +785,6 @@
   window.toggleViewMode = toggleViewMode;
   window.connectEsp = connectEsp;
   window.loadScenarios = loadScenarios;
-  window.setWind = setWind;
   window.setPwm = setPwm;
   window.stopTrain = stopTrain;
   window.updateRsCommand = updateRsCommand;

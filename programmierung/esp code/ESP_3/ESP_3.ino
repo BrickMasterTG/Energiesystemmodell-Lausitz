@@ -14,12 +14,13 @@
 // RELAY KONFIGURATION
 // ============================================================================
 struct RelayConfig { uint8_t pin; const char* name; bool activeLow; };
-const int RELAY_COUNT = 4;
+const int RELAY_COUNT = 5;
 RelayConfig RELAYS[RELAY_COUNT] = {
   {19, "Relais 2", true},
   {21, "Relais 3", true},
   {22, "Relais 4", true},
   {23, "Relais 5", true},
+  {27, "Wind", false},
 };
 
 inline int logicalToPhys(int v, bool al) { return al ? (v ? LOW : HIGH) : (v ? HIGH : LOW); }
@@ -54,11 +55,6 @@ void stopMotor() {
   Serial.println("Motor STOP");
 }
 
-// ============================================================================
-// WIND-PIN
-// ============================================================================
-const int windPin = 27;
-bool isRunning = false;
 
 // ============================================================================
 // TEMPERATUR (NTC)
@@ -118,7 +114,7 @@ void sendStatus() {
     msg.relays[i] = physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow);
   msg.pwm     = (int16_t)pwmValue;
   msg.forward = motorForward ? 1 : 0;
-  msg.running = isRunning   ? 1 : 0;
+  msg.running = 0;
   
   msg.sensors[0] = cachedTemp1;
   msg.sensors[1] = cachedTemp2;
@@ -150,12 +146,6 @@ void onReceive(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
     setMotor(msg.val, msg.extra != 0);
     sendStatus();
 
-  } else if (strcmp(msg.cmd, "WIND") == 0) {
-    Serial.printf("[CMD] WIND Received: val=%d\n", msg.val);
-    isRunning = (msg.val != 0);
-    digitalWrite(windPin, isRunning ? HIGH : LOW);
-    Serial.printf("Wind (Pin %d) → %s\n", windPin, isRunning ? "AN" : "AUS");
-    sendStatus();
   }
 }
 
@@ -175,8 +165,6 @@ void setup() {
   // Motor-Pins
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
-  pinMode(windPin, OUTPUT);
-  digitalWrite(windPin, LOW);
 
   if (!ledcAttach(ENA, PWM_FREQ, PWM_RES)) {
     Serial.println("ledcAttach fehlgeschlagen!");
@@ -245,7 +233,7 @@ void loop() {
     lastLog = now;
     Serial.print("[LOG] Relais: ");
     for (int i=0; i<RELAY_COUNT; i++) Serial.print(physToLogical(digitalRead(RELAYS[i].pin), RELAYS[i].activeLow));
-    Serial.printf(" | Temp1: %.2f C | Temp2: %.2f C | PWM: %d | Wind: %d\n", cachedTemp1, cachedTemp2, pwmValue, isRunning);
+    Serial.printf(" | Temp1: %.2f C | Temp2: %.2f C | PWM: %d\n", cachedTemp1, cachedTemp2, pwmValue);
   }
 }
 

@@ -9,8 +9,8 @@ import json
 # ============================================================================
 
 # Toggle between real hardware and local simulator:
-HOST = "http://192.168.4.1"       # real ESP_Host
-# HOST = "http://localhost:8001"  # local simulator (python programmierung/simulator/esp_simulator.py)
+# HOST = "http://192.168.4.1"       # real ESP_Host
+HOST = "http://localhost:8001"  # local simulator (python programmierung/simulator/esp_simulator.py)
 HTTP_TIMEOUT = 10              # Default timeout in seconds
 USE_MOCK_DATA = False
 VERBOSE = False
@@ -58,6 +58,7 @@ RELAY_CONFIG = {
         1: {"name": "Pumpe 2"},
         2: {"name": "Ventil 1"},
         3: {"name": "Ventil 2"},
+        4: {"name": "Wind"},
     },
     "esp4": {
         0: {"name": "Elekrolyseur"},

@@ -496,6 +496,7 @@
       1: 'lake-controls',
       2: 'lake-controls',
       3: 'lake-controls',
+      4: 'wind-controls',
     },
   };
 
@@ -765,24 +766,6 @@
     refreshWindTrainStatus();
   }
 
-  async function setWind(val) {
-    try {
-      const response = await fetch('/api/esp3/set_wind', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ val: val }),
-      });
-
-      if (!response.ok) throw new Error('Request failed');
-
-      showNotification(`Wind ${val ? 'eingeschaltet' : 'ausgeschaltet'}`, 'success');
-      setTimeout(refreshWindTrainStatus, 200);
-    } catch (error) {
-      console.error('Wind control error:', error);
-      showNotification('Fehler bei Wind-Steuerung', 'error');
-    }
-  }
-
   async function updateTrainPWM(value) {
     const display = $('pwm-display');
     if (display) display.textContent = value;
@@ -830,17 +813,9 @@
       const data = await response.json();
       const state = data.body || data;
 
-      const windDisplay = $('wind-display');
-      const windStatus = $('wind-status');
       const pwmDisplay = $('pwm-display');
       const trainPwm = $('train-pwm');
       const slider = $('train-slider');
-
-      if (state.running !== undefined) {
-        const windText = state.running ? 'AN' : 'AUS';
-        if (windDisplay) windDisplay.textContent = windText;
-        if (windStatus) windStatus.textContent = windText;
-      }
 
       if (state.pwm !== undefined) {
         if (pwmDisplay) pwmDisplay.textContent = state.pwm;
@@ -920,7 +895,6 @@
 
   // Expose functions to window
   window.loadScenarios = loadScenarios;
-  window.setWind = setWind;
   window.updateTrainPWM = updateTrainPWM;
   window.stopTrain = stopTrain;
   window.toggleReserveSection = toggleReserveSection;

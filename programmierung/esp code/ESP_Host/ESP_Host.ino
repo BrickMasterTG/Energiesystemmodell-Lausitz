@@ -295,12 +295,6 @@ void handleForward() {
     int dir = (dirPos > 4) ? path.substring(dirPos).toInt() : 1;
     success = sendCmd(target.c_str(), "TRAIN", 0, pwm, dir);
 
-  } else if (path.startsWith("/set?val=")) {
-    // Wind (ESP3): /set?val=X
-    int valPos = path.indexOf("val=") + 4;
-    int val = path.substring(valPos).toInt();
-    success = sendCmd(target.c_str(), "WIND", 0, val);
-
   } else if (path.startsWith("/send")) {
     // RS232-Befehl: Extrahiere cmd und timeout aus dem Pfad
     // (/send?cmd=CMD&timeout=MS)
