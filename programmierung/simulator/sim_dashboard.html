@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP Simulator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 1rem; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .panel { background: #16213e; border-radius: 8px; padding: 1rem; }
+    .panel h2 { font-size: 1rem; margin-bottom: 0.75rem; color: #7ec8e3; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { text-align: left; padding: 0.35rem 0.5rem; border-bottom: 1px solid #2a2a4a; }
+    th { color: #aaa; font-weight: 600; }
+    .relay-on { color: #4ade80; font-weight: bold; }
+    .relay-off { color: #666; }
+    .online { color: #4ade80; }
+    .offline { color: #f87171; }
+    .toggle-btn {
+      background: #334155; border: none; color: #e0e0e0; padding: 0.2rem 0.6rem;
+      border-radius: 4px; cursor: pointer; font-size: 0.78rem;
+    }
+    .toggle-btn:hover { background: #475569; }
+    #log-body { max-height: 420px; overflow-y: auto; }
+    #log-body tr:hover { background: #1e2a45; }
+    .sensor-val { font-family: monospace; color: #fbbf24; }
+    .status-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .badge {
+      background: #0f3460; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>ESP Simulator Dashboard</h1>
+  <p class="subtitle">Port 8001 &mdash; mirrors ESP_Host API &bull; auto-refresh 1 s</p>
+
+  <div class="status-bar" id="status-bar"></div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Device States</h2>
+      <div id="devices"></div>
+    </div>
+    <div class="panel">
+      <h2>Command Log</h2>
+      <table>
+        <thead><tr><th>Time</th><th>Target</th><th>Path</th><th>Code</th><th>Detail</th></tr></thead>
+        <tbody id="log-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function toggleOnline(device, online) {
+      await fetch('/api/sim/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device, online })
+      });
+      refresh();
+    }
+
+    function renderRelay(name, state) {
+      if (name === 'esp5') return '<em>LED only (no relays)</em>';
+      let rows = '';
+      if (name === 'esp1' || name === 'esp2') {
+        for (const [k, v] of Object.entries(state)) {
+          if (k.startsWith('r')) {
+            rows += `<tr><td>${k}</td><td class="${v ? 'relay-on' : 'relay-off'}">${v ? 'ON' : 'off'}</td></tr>`;
+          }
+        }
+      } else if (state.relays) {
+        state.relays.forEach((v, i) => {
+          rows += `<tr><td>r${i}</td><td class="${v ? 'relay-on' : 'relay-off'}">${v ? 'ON' : 'off'}</td></tr>`;
+        });
+      }
+      return rows ? `<table><thead><tr><th>Relay</th><th>State</th></tr></thead><tbody>${rows}</tbody></table>` : '';
+    }
+
+    function renderSensors(name, state) {
+      const parts = [];
+      if (state.temp != null) parts.push(`temp: <span class="sensor-val">${state.temp} °C</span>`);
+      if (state.sensors) {
+        if (name === 'esp4') {
+          state.sensors.forEach((s, i) => {
+            parts.push(`s${i}: <span class="sensor-val">${s.current} mA</span>`);
+          });
+          if (state.flow != null) parts.push(`flow: <span class="sensor-val">${state.flow} L/min</span>`);
+        } else {
+          state.sensors.forEach((v, i) => {
+            parts.push(`s${i}: <span class="sensor-val">${v}</span>`);
+          });
+        }
+      }
+      if (name === 'esp3') {
+        parts.push(`running: <span class="sensor-val">${state.running}</span>`);
+        parts.push(`pwm: <span class="sensor-val">${state.pwm}</span>`);
+        parts.push(`forward: <span class="sensor-val">${state.forward}</span>`);
+      }
+      return parts.length ? parts.join(' &bull; ') : '<em>no sensors</em>';
+    }
+
+    async function refresh() {
+      try {
+        const r = await fetch('/api/sim/status');
+        const data = await r.json();
+
+        const bar = document.getElementById('status-bar');
+        bar.innerHTML = Object.entries(data.devices).map(([name, d]) => {
+          const cls = d.online ? 'online' : 'offline';
+          const label = d.online ? 'ONLINE' : 'OFFLINE';
+          const btnLabel = d.online ? 'Set offline' : 'Set online';
+          const next = !d.online;
+          return `<span class="badge">${name}: <span class="${cls}">${label}</span>
+            <button class="toggle-btn" onclick="toggleOnline('${name}', ${next})">${btnLabel}</button></span>`;
+        }).join('');
+
+        const devEl = document.getElementById('devices');
+        devEl.innerHTML = Object.entries(data.devices).map(([name, d]) => `
+          <div style="margin-bottom:1rem">
+            <strong>${name}</strong> ${renderRelay(name, d.state)}
+            <div style="margin-top:0.4rem;font-size:0.82rem">${renderSensors(name, d.state)}</div>
+          </div>
+        `).join('');
+
+        const logEl = document.getElementById('log-body');
+        logEl.innerHTML = (data.log || []).map(e => `
+          <tr>
+            <td>${e.ts}</td>
+            <td>${e.target || '—'}</td>
+            <td>${e.path}</td>
+            <td>${e.code}</td>
+            <td>${e.detail || ''}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 1000);
+  </script>
+</body>
+</html>

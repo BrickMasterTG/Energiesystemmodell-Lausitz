@@ -8,7 +8,9 @@ import json
 # GLOBAL SETTINGS
 # ============================================================================
 
-HOST = "http://192.168.4.1"   # Host-ESP
+# Toggle between real hardware and local simulator:
+HOST = "http://192.168.4.1"       # real ESP_Host
+# HOST = "http://localhost:8001"  # local simulator (python programmierung/simulator/esp_simulator.py)
 HTTP_TIMEOUT = 10              # Default timeout in seconds
 USE_MOCK_DATA = False
 VERBOSE = False
