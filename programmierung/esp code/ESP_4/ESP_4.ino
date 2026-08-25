@@ -21,8 +21,8 @@ const int   PUMP_PWM_MAX      = (1 << PUMP_PWM_RES_BITS) - 1;
 const int   PUMP_PWM_ON_DUTY  = (int)(PUMP_PWM_MAX * (2.5f / 12.0f) + 0.5f);
 
 // NEU: Richtungspins für L298N (IN1/IN2)
-const int   PUMP_IN1 = 14;   // Check Pin
-const int   PUMP_IN2 = 33;   // Check Pin
+const int   PUMP_IN1 = 14;   // Check Pin in3 grün 14
+const int   PUMP_IN2 = 25;   // Check Pin in4 weiß 25
 const uint8_t RELAY_COUNT = 8;
 RelayConfig RELAYS[RELAY_COUNT] = {
   {18, "Elektrolyseur", true},
@@ -30,7 +30,7 @@ RelayConfig RELAYS[RELAY_COUNT] = {
   {21, "Mitte Relay",   true},
   {22, "Innen Relay",   true},
   {23, "Lüfter",        true},
-  {26, "Elektrolyseur-Pumpe", true},
+  {26, "Elektrolyseur-Pumpe", true}, // ENB -> gelb 26
   {33, "Windrad-LED",   true}, // Check Pin
   {27, "Windrad-Motor", true}, // Check Pin
 };
